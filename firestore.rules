@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// Reglas de seguridad de la app Control Planta Agregados.
+// IMPORTANTE: antes de publicarlas en Firebase, cambia TU_CORREO@gmail.com
+// por el correo de Google del dueño, en minúsculas (paso 5 del README).
+// No subas a GitHub este archivo con tu correo real.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function correoDueno() { return 'TU_CORREO@gmail.com'; }
+
+    function logueado()     { return request.auth != null && request.auth.token.email_verified == true; }
+    function correo()       { return request.auth.token.email.lower(); }
+    function esDueno()      { return logueado() && correo() == correoDueno().lower(); }
+    function registrado()   { return logueado() && exists(/databases/$(database)/documents/usuarios/$(correo())); }
+    function rol()          { return get(/databases/$(database)/documents/usuarios/$(correo())).data.rol; }
+    function esAdmin()      { return esDueno() || (registrado() && rol() == 'admin'); }
+    function puedeEscribir(){ return esAdmin() || (registrado() && rol() == 'editor'); }
+    function puedeLeer()    { return esAdmin() || (registrado() && rol() in ['editor', 'lector']); }
+
+    // Quién puede entrar y con qué permiso: solo administradores lo cambian.
+    match /usuarios/{email} {
+      allow read: if puedeLeer() || (logueado() && email == correo());
+      allow write: if esAdmin();
+    }
+
+    // Precios y datos de la empresa: solo administradores.
+    match /productos/{id} { allow read: if puedeLeer(); allow write: if esAdmin(); }
+    match /config/{id}    { allow read: if puedeLeer(); allow write: if esAdmin(); }
+
+    // Numeración de tickets.
+    match /contadores/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+
+    // Clientes: registran y editan; solo administradores borran.
+    match /clientes/{id} {
+      allow read: if puedeLeer();
+      allow create, update: if puedeEscribir();
+      allow delete: if esAdmin();
+    }
+
+    // Sencillo, conteo y cierre de cada día.
+    match /dias/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+
+    // Tickets y gastos. Un ticket no se borra (se anula) y su número no se cambia.
+    match /m/{mes}/mov/{id} {
+      allow read: if puedeLeer();
+      allow create: if puedeEscribir();
+      allow update: if puedeEscribir()
+        && request.resource.data.get('ticketN', null) == resource.data.get('ticketN', null)
+        && request.resource.data.get('ticket', '') == resource.data.get('ticket', '');
+      allow delete: if esAdmin() || (puedeEscribir() && !('ticketN' in resource.data));
+    }
+
+    // Registro diario de volquetes.
+    match /m/{mes}/volquetes/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+  }
+}
