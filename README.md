@@ -1,6 +1,6 @@
 # Control Planta Agregados
 
-App web para el registro diario de ventas, cuadre de mesa, clientes, productos y volquetes.
+App web para el registro diario de ventas, cuadre de mesa, clientes, productos, diésel y volquetes.
 Funciona en computadora y celular. Los datos se guardan en Firebase (Google) y la página se publica gratis con GitHub Pages.
 
 ---
@@ -41,7 +41,7 @@ Funciona en computadora y celular. Los datos se guardan en Firebase (Google) y l
 
 1. **Firestore Database → pestaña Reglas**.
 2. Borra todo y pega el contenido del archivo **`firestore.rules`**.
-3. En la línea `return 'TU_CORREO@gmail.com';` pon **tu** correo de Google (el del dueño).
+3. En la línea `return ['TU_CORREO@gmail.com'];` pon el correo de Google de cada dueño, entre comillas simples y separados por coma.
 4. **Publicar**.
 
 Con esto, nadie puede ver ni tocar los datos salvo los correos que tú autorices dentro de la app.
@@ -87,6 +87,27 @@ Si se va la señal, la app sigue funcionando para gastos, sencillo, cierres y vo
 ## Límites del plan gratuito (Spark)
 
 1 GB de datos, 50,000 lecturas y 20,000 escrituras por día. Para una planta con hasta 10 usuarios sobra.
+
+## Equipos
+
+Logística → **Equipos** es la lista única de maquinaria: nombre (como lo llaman), tipo (volquete, excavadora, cargador frontal…), modelo y placa. Volquetes muestra los de tipo *Volquete* y Diésel muestra todos. Un equipo vendido se **da de baja** y su historial se conserva.
+
+## Diésel
+
+Logística → **Diésel**. El primer día, registra un **Ajuste por medición** en cada tanque con lo que midieron: así arranca el saldo. Desde ahí, cada **compra** suma y cada **consumo** resta del tanque elegido. Si al medir no coincide, otro ajuste lo corrige y queda registrado.
+
+El diésel de los **volquetes no se anota en Diésel**: se registra en Volquetes (galones y *tanque del que cargó*, junto con los viajes del día). Al guardar, se descuenta del tanque y aparece solo en la tabla de Diésel como "desde Volquetes". El formulario de Diésel queda para compras, ajustes y el consumo de los demás equipos. La tabla se puede filtrar por tanque, equipo y tipo de movimiento.
+
+## Facturas y guías
+
+Ventas → **Facturas y guías**.
+
+1. **Registra la factura**: número (sale el siguiente), fecha, RUC, razón social, productos con sus m³, total y si se pagó en banco o en efectivo. Si el RUC ya es de un cliente, la razón social sale sola.
+2. **Cada carro** se anota en *Registro del día → Agregar fila* con el tipo **Ya pagado (factura)**: escribe el número de la factura y elígela (solo salen las que faltan despachar). Se llenan solos el cliente, el N° de guía siguiente y la licencia si esa placa ya vino antes. El ticket sale correlativo y sin monto.
+3. Cada guía se descuenta de su factura. **Rojo**: falta despachar. **Verde**: despachada completa. Si un carro pasa lo que falta, la app pide el motivo en Obs.
+4. Anular un ticket quita su guía de la factura. Una factura solo se anula si no tiene guías.
+
+Las facturas salen en el registro del día de su fecha y en su PDF, pero **no entran al cuadre de la mesa**. El botón *Descargar PDF de guías y facturas* da el cuaderno de guías del mes.
 
 ## Cambiar algo de la app
 

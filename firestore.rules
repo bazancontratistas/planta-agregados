@@ -1,18 +1,18 @@
 rules_version = '2';
 
 // Reglas de seguridad de la app Control Planta Agregados.
-// IMPORTANTE: antes de publicarlas en Firebase, cambia TU_CORREO@gmail.com
-// por el correo de Google del dueño, en minúsculas (paso 5 del README).
-// No subas a GitHub este archivo con tu correo real.
+// IMPORTANTE: antes de publicarlas en Firebase, pon en correosDuenos() los
+// correos de Google de los dueños, en minúsculas (paso 5 del README).
+// No subas a GitHub este archivo con los correos reales.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function correoDueno() { return 'TU_CORREO@gmail.com'; }
+    function correosDuenos() { return ['TU_CORREO@gmail.com']; }
 
     function logueado()     { return request.auth != null && request.auth.token.email_verified == true; }
     function correo()       { return request.auth.token.email.lower(); }
-    function esDueno()      { return logueado() && correo() == correoDueno().lower(); }
+    function esDueno()      { return logueado() && correo() in correosDuenos(); }
     function registrado()   { return logueado() && exists(/databases/$(database)/documents/usuarios/$(correo())); }
     function rol()          { return get(/databases/$(database)/documents/usuarios/$(correo())).data.rol; }
     function esAdmin()      { return esDueno() || (registrado() && rol() == 'admin'); }
@@ -54,5 +54,21 @@ service cloud.firestore {
 
     // Registro diario de volquetes.
     match /m/{mes}/volquetes/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+
+    // Diésel: saldo de tanques, lista de equipos y movimientos (compras, consumos, ajustes).
+    match /tanques/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+    match /equipos/{id} {
+      allow read: if puedeLeer();
+      allow create, update: if puedeEscribir();
+      allow delete: if esAdmin();
+    }
+    match /m/{mes}/diesel/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
+
+    // Facturas con sus guías. No se borran: se anulan.
+    match /facturas/{id} {
+      allow read: if puedeLeer();
+      allow create, update: if puedeEscribir();
+      allow delete: if esAdmin();
+    }
   }
 }

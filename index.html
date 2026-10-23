@@ -23,7 +23,7 @@
   --accent:#f2b705; --accent-ink:#16202a; --accent-soft:#fdf1c8;
   --band:#16202a; --band-fg:#f1f4f6; --band-muted:#a9b5c0;
   --good:#0a7a2f; --good-soft:#e2f3e7; --warn:#9a5b00; --warn-soft:#fdefd6; --bad:#b42323; --bad-soft:#fbe3e3;
-  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --grid:#e3e7ea; --axis:#7d8994;
+  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a; --series-4:#eda100; --series-5:#e87ba4; --series-6:#6250d6; --grid:#e3e7ea; --axis:#7d8994;
   --shadow:0 1px 2px rgba(22,32,42,.06),0 6px 20px rgba(22,32,42,.07);
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -33,14 +33,14 @@
   --accent:#f5c02a; --accent-ink:#141b22; --accent-soft:#3a3214;
   --band:#0a0f14; --band-fg:#eef2f5; --band-muted:#8e9ba7;
   --good:#3fbf68; --good-soft:#123222; --warn:#f0a93a; --warn-soft:#3a2a10; --bad:#f07070; --bad-soft:#3a1717;
-  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --grid:#26313b; --axis:#8a96a1;
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-5:#d55181; --series-6:#9085e9; --grid:#26313b; --axis:#8a96a1;
   --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark; } }
 :root[data-theme="dark"]{
   --bg:#0e141a; --surface:#161f28; --surface-2:#1b252f; --fg:#e7ecf0; --muted:#9aa7b3; --line:#2a3642;
   --accent:#f5c02a; --accent-ink:#141b22; --accent-soft:#3a3214;
   --band:#0a0f14; --band-fg:#eef2f5; --band-muted:#8e9ba7;
   --good:#3fbf68; --good-soft:#123222; --warn:#f0a93a; --warn-soft:#3a2a10; --bad:#f07070; --bad-soft:#3a1717;
-  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --grid:#26313b; --axis:#8a96a1;
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70; --series-4:#c98500; --series-5:#d55181; --series-6:#9085e9; --grid:#26313b; --axis:#8a96a1;
   --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark; }
 
 *{box-sizing:border-box}
@@ -85,6 +85,21 @@ main .wrap{padding-block:22px 56px;display:grid;gap:20px}
 .btn.ghost{border-color:transparent;background:transparent}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .readonly .needs-write{display:none!important}
+[hidden]{display:none!important}
+.fprod{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline;font-size:.9rem;margin-bottom:7px}
+.fprod:last-child{margin-bottom:0}
+.fprod b{font-variant-numeric:tabular-nums;font-weight:600}
+.fprod .meter{grid-column:1/-1;height:7px}
+.meter.pend span{background:var(--bad)} .meter.ok span{background:var(--good)}
+tr.fpend>td:first-child{box-shadow:inset 4px 0 0 var(--bad)} tr.fok>td:first-child{box-shadow:inset 4px 0 0 var(--good)}
+tr.fdet>td{background:var(--surface-2)}
+.glist{display:grid;gap:6px}
+.glist .g{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:.88rem;padding:6px 0;border-bottom:1px solid var(--line)}
+.glist .g:last-child{border-bottom:0}
+.glist .g b{font-variant-numeric:tabular-nums}
+.glist .g .btn{margin-left:auto}
+.estados{display:flex;flex-wrap:wrap;gap:4px}
+#qFacList{min-width:min(360px,calc(100vw - 48px))}
 .notice{border-radius:8px;padding:10px 14px;background:var(--warn-soft);color:var(--fg);border:1px solid var(--line)}
 .notice b{color:var(--warn)}
 .muted{color:var(--muted)}
@@ -153,6 +168,8 @@ tr.anul td.num{text-decoration:line-through}
   .rt td.wide{grid-column:1/-1}
   .rt td.acts{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   .rt td.acts::before{display:none}
+  .rt tr.fpend{border-left:4px solid var(--bad)} .rt tr.fok{border-left:4px solid var(--good)}
+  tr.fpend>td:first-child,tr.fok>td:first-child{box-shadow:none}
   .rt tfoot tr{background:var(--surface-2);border-top:3px double var(--line)}
   .phead h2{font-size:1.5rem}
   .home-hello{font-size:1.7rem}
@@ -212,6 +229,7 @@ tr.anul td.num{text-decoration:line-through}
 .combo li small{color:var(--muted);font-variant-numeric:tabular-nums}
 .combo li[aria-selected="true"],.combo li:hover{background:var(--accent-soft)}
 .combo li.nuevo{color:var(--muted);font-style:italic}
+.tipobtns{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 
 /* productos */
 .pcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}
@@ -343,6 +361,7 @@ body:not(.admin) .needs-admin{display:none!important}
     </div>
     <div><div class="seg" role="tablist" id="ventasSeg">
       <button data-go="ventas" aria-selected="true">Registro del día</button>
+      <button data-go="ventas-facturas" aria-selected="false">Facturas y guías</button>
       <button data-go="ventas-clientes" aria-selected="false">Clientes</button>
       <button data-go="ventas-cierres" aria-selected="false">Cierres del mes</button>
       <button data-go="ventas-resumen" aria-selected="false">Resumen</button>
@@ -387,6 +406,11 @@ body:not(.admin) .needs-admin{display:none!important}
             <ul id="qCliList" role="listbox" hidden></ul></div>
           <div class="q"><label for="qPlaca">Placa</label><input id="qPlaca" placeholder="ABC-123"></div>
           <div class="q s2"><label for="qTicket">Ticket</label><output id="qTicket" aria-live="polite">—</output><input id="qTicketIni" inputmode="numeric" placeholder="N° del primer ticket" hidden></div>
+          <div class="q s2 combo" id="qFacBox" hidden><label for="qFac">Factura <span class="req">*</span></label>
+            <input id="qFac" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="qFacList" placeholder="Escribe el número: 2293" autocomplete="off">
+            <ul id="qFacList" role="listbox" hidden></ul></div>
+          <div class="q" id="qGuiaBox" hidden><label for="qGuia">N° guía <span class="req">*</span></label><input id="qGuia" placeholder="EG07-908" autocomplete="off"></div>
+          <div class="q" id="qLicBox" hidden><label for="qLic">Licencia</label><input id="qLic" list="dlLic" placeholder="Q12345678" autocomplete="off"></div>
           <div class="qitems" id="qItems" style="grid-column:1/-1"></div>
           <div class="q"><label for="qVenta">Venta S/ <span class="req">*</span></label><input id="qVenta" inputmode="decimal" placeholder="0.00"></div>
           <div class="q"><label for="qGasto">Gasto S/</label><input id="qGasto" inputmode="decimal" placeholder="0.00"></div>
@@ -428,10 +452,29 @@ body:not(.admin) .needs-admin{display:none!important}
       </div>
     </div>
 
+    <!-- FACTURAS Y GUÍAS -->
+    <div class="panel" id="s-facturas" hidden>
+      <div class="tiles" id="faTiles"></div>
+      <div class="listbar">
+        <div class="actions">
+          <div class="seg" id="faSeg" aria-label="Filtrar facturas"><button data-fa="pend" aria-selected="true">Por despachar</button><button data-fa="comp" aria-selected="false">Despachadas</button><button data-fa="todas" aria-selected="false">Todas</button></div>
+          <input type="search" id="faBus" class="inl" placeholder="Buscar factura, guía, RUC o cliente" aria-label="Buscar factura">
+        </div>
+        <button class="btn primary needs-write" id="faNueva">+ Nueva factura</button>
+      </div>
+      <p class="hintline" style="margin:-6px 0 0">Primero se registra la factura. Cada carro se anota en <b>Registro del día → Agregar fila</b> con el tipo <b>Ya pagado (factura)</b>: su guía se descuenta sola. <span style="color:var(--bad);font-weight:600">Rojo</span>: falta despachar. <span style="color:var(--good);font-weight:600">Verde</span>: despachada completa.</p>
+      <div class="tablewrap"><table class="rt" id="tFac"></table></div>
+      <div class="listbar">
+        <h3 style="font-size:1.3rem">Guías de <span class="mesTxt"></span></h3>
+        <button class="btn" id="gPdf">Descargar PDF de guías y facturas</button>
+      </div>
+      <div class="tablewrap"><table class="rt" id="tGuias"></table></div>
+    </div>
+
     <!-- CLIENTES -->
     <div class="panel" id="s-clientes" hidden>
       <div class="listbar">
-        <input type="search" id="fCli" class="inl" placeholder="Buscar por nombre o placa" aria-label="Buscar cliente">
+        <input type="search" id="fCli" class="inl" placeholder="Buscar por nombre, placa o RUC" aria-label="Buscar cliente">
         <button class="btn primary needs-write" id="cliNuevo">+ Nuevo cliente</button>
       </div>
       <p class="hintline" style="margin:-6px 0 0">Al vender a un cliente nuevo, se agrega solo a esta lista.</p>
@@ -453,7 +496,7 @@ body:not(.admin) .needs-admin{display:none!important}
       <div class="grid2">
         <div class="card">
           <h3>Ingresos y gastos por mes</h3>
-          <p class="note">Últimos 6 meses. Ingresos = efectivo + ventas por depósito. Gastos = mesa + caja fuerte (sin depósitos al banco).</p>
+          <p class="note">Últimos 6 meses. Ingresos = efectivo + ventas por depósito + facturas. Gastos = mesa + caja fuerte (sin depósitos al banco).</p>
           <div class="legend"><span><i style="background:var(--series-1)"></i>Ingresos</span><span><i style="background:var(--series-2)"></i>Gastos</span></div>
           <div class="chartbox"><canvas id="chMeses" aria-label="Ingresos y gastos por mes"></canvas></div>
         </div>
@@ -479,6 +522,14 @@ body:not(.admin) .needs-admin{display:none!important}
   <section class="panel" id="v-logistica" hidden>
     <div class="phead"><div><h2>Logística</h2><p>Elige la maquinaria.</p></div></div>
     <div class="menu">
+      <button class="mcard" data-go="equipos">
+        <span class="ic" aria-hidden="true"><svg viewBox="0 0 30 30"><rect x="4" y="5" width="22" height="5" rx="1.5" fill="#16202a"/><rect x="4" y="12.5" width="22" height="5" rx="1.5" fill="#16202a" opacity=".8"/><rect x="4" y="20" width="22" height="5" rx="1.5" fill="#16202a" opacity=".6"/></svg></span>
+        <h3>Equipos</h3><p>La lista de toda la maquinaria: nombre, tipo, modelo y placa.</p><div class="meta" id="logEqMeta"></div>
+      </button>
+      <button class="mcard" data-go="diesel">
+        <span class="ic" aria-hidden="true"><svg viewBox="0 0 30 30"><rect x="9" y="3" width="8" height="5" rx="1" fill="#16202a" opacity=".7"/><rect x="5" y="8" width="16" height="18" rx="2" fill="#16202a"/><path d="M21 11l4 3v9a2 2 0 0 1-4 0v-5" stroke="#16202a" stroke-width="2" fill="none"/><path d="M13 12.5c-2 3-3 4.6-3 6a3 3 0 0 0 6 0c0-1.4-1-3-3-6z" fill="#f2b705"/></svg></span>
+        <h3>Diésel</h3><p>Compras, consumo por equipo y saldo de los 3 tanques.</p><div class="meta" id="logDieselMeta"></div>
+      </button>
       <button class="mcard" data-go="volquetes">
         <span class="ic" aria-hidden="true"><svg viewBox="0 0 26 26"><path d="M3 17h13l2-6h4l2 3v3H3z" fill="#16202a"/><path d="M5 11l3-5h7l1 5z" fill="#16202a" opacity=".75"/><circle cx="7.5" cy="19.5" r="2.5" fill="#16202a"/><circle cx="19.5" cy="19.5" r="2.5" fill="#16202a"/></svg></span>
         <h3>Volquetes</h3><p>Viajes de over, diésel y horómetro de cada volquete.</p><div class="meta" id="logVolqMeta"></div>
@@ -498,10 +549,63 @@ body:not(.admin) .needs-admin{display:none!important}
     </div>
   </section>
 
+  <!-- DIÉSEL -->
+  <section class="panel" id="v-diesel" hidden>
+    <div class="phead">
+      <div><h2>Diésel · <span class="mesTxt"></span></h2><p>Saldo de cada tanque, compras y consumo por equipo, como en el cuaderno. Todo en galones. Los consumos de los volquetes llegan solos desde Volquetes.</p></div>
+      <div class="actions"><button class="btn" data-go="equipos">Lista de equipos</button><button class="btn" id="dPdf">Descargar PDF del mes</button></div>
+    </div>
+    <div class="tiles" id="dTiles"></div>
+    <div class="panel" id="s-dmov">
+      <div class="listbar">
+        <h3 style="font-size:1.3rem">Movimientos de <span class="mesTxt"></span></h3>
+        <div class="actions"><div class="seg" id="dFiltro" aria-label="Filtrar por tanque"></div>
+          <select id="dFEq" class="inl" aria-label="Filtrar por equipo"></select>
+          <select id="dFMov" class="inl" aria-label="Filtrar por movimiento"><option value="todos">Todos los movimientos</option><option value="consumo">Consumos</option><option value="compra">Compras</option><option value="ajuste">Ajustes</option></select></div>
+      </div>
+      <div class="tablewrap"><table class="rt" id="tDiesel"></table></div>
+      <div class="card">
+        <h3>Consumo por equipo</h3>
+        <p class="note"><span class="mesTxt"></span>.</p>
+        <div class="sums" id="dPorTipo" style="margin-bottom:10px"></div>
+        <div class="tablewrap"><table class="rt" id="tDEq"></table></div>
+      </div>
+      <form class="card quick needs-write" id="dForm" novalidate autocomplete="off">
+        <div class="listbar"><h3>Registrar compra, ajuste o consumo de otros equipos</h3><span class="hintline">El diésel de los <b>volquetes</b> se registra en Volquetes, junto con sus viajes, y aparece aquí solo. <b>Enter</b> guarda.</span></div>
+        <div class="qgrid">
+          <div class="q s2"><label for="dFecha">Fecha <span class="req">*</span></label><input id="dFecha" type="date"></div>
+          <div class="q s2"><label for="dTipo">Tipo <span class="req">*</span></label><select id="dTipo"><option value="consumo">Consumo</option><option value="compra">Compra de diésel</option><option value="ajuste">Ajuste por medición</option></select></div>
+          <div class="q s2"><label for="dTanque">Tanque <span class="req">*</span></label><select id="dTanque"></select></div>
+          <div class="q s2"><label for="dGal" id="dGalLbl">Galones <span class="req">*</span></label><input id="dGal" inputmode="decimal" placeholder="0.00"></div>
+          <div class="q s3 combo" id="dEqBox"><label for="dEquipo">Equipo <span class="req">*</span></label>
+            <input id="dEquipo" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dEqList" placeholder="Escribe la primera letra">
+            <ul id="dEqList" role="listbox" hidden></ul></div>
+          <div class="q s2" id="dProvBox" hidden><label for="dProv">Proveedor / grifo</label><input id="dProv" list="dlProv"></div>
+          <div class="q" id="dPrecioBox" hidden><label for="dPrecio">S/ por galón</label><input id="dPrecio" inputmode="decimal" placeholder="0.00"></div>
+          <div class="q s3" id="dObsBox"><label for="dObs">Obs.</label><input id="dObs"></div>
+          <div class="q qbtn"><button class="btn primary" type="submit" id="dSave">Agregar</button></div>
+          <div class="qhint" id="dHint" style="grid-column:1/-1"></div>
+        </div>
+        <div class="perr" id="dErr" role="alert"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- EQUIPOS -->
+  <section class="panel" id="v-equipos" hidden>
+    <div class="phead">
+      <div><h2>Equipos</h2><p>Una sola lista para toda la app. Volquetes, Diésel y los demás módulos toman de aquí sus equipos.</p></div>
+      <div class="actions"><button class="btn primary needs-write" id="eqNuevo">+ Nuevo equipo</button></div>
+    </div>
+    <div class="listbar"><div class="seg" id="eqFiltro" aria-label="Filtrar por tipo"></div><input type="search" id="fEq" class="inl" placeholder="Buscar nombre, modelo o placa" aria-label="Buscar equipo"></div>
+    <div class="tablewrap"><table class="rt" id="tEq"></table></div>
+    <p class="hintline" style="margin:0">Un equipo vendido o malogrado para siempre se <b>da de baja</b>: deja de aparecer al registrar, pero su historial se conserva.</p>
+  </section>
+
   <!-- VOLQUETES -->
   <section class="panel" id="v-volquetes" hidden>
     <div class="phead">
-      <div><h2>Volquetes · <span class="mesTxt"></span></h2><p>Meta de viajes de over: 2 por día de lunes a viernes, 1 el sábado y ninguno el domingo. Toca un volquete para registrar su día.</p></div>
+      <div><h2>Volquetes · <span class="mesTxt"></span></h2><p>Meta de viajes de over: 2 por día de lunes a viernes, 1 el sábado y ninguno el domingo. Toca un volquete para registrar su día. La lista sale de Logística → Equipos.</p></div>
       <div class="actions"><button class="btn" id="volqPdf">Descargar PDF del mes</button></div>
     </div>
     <div class="vcards" id="vcards"></div>
@@ -526,7 +630,8 @@ body:not(.admin) .needs-admin{display:none!important}
         <form class="regform" id="vqForm" novalidate>
           <div class="fld half"><label for="vqFecha">Fecha</label><input type="date" id="vqFecha" required></div>
           <div class="fld half"><label for="vqViajes">Viajes de over</label><input type="number" id="vqViajes" inputmode="numeric" min="0" step="1" required></div>
-          <div class="fld half"><label for="vqGalones">Diésel consumido (galones)</label><input type="number" id="vqGalones" inputmode="decimal" min="0" step="0.01"></div>
+          <div class="fld half"><label for="vqGalones">Diésel cargado (galones)</label><input type="number" id="vqGalones" inputmode="decimal" min="0" step="0.01"></div>
+          <div class="fld half"><label for="vqTanque">Tanque del que cargó</label><select id="vqTanque"></select><span class="hint">Se descuenta de ese tanque y aparece solo en Diésel.</span></div>
           <div class="fld half"><label for="vqHoro">Horómetro</label><input type="number" id="vqHoro" inputmode="decimal" min="0" step="0.1"><span class="hint" id="vqHoroHint"></span></div>
           <div class="fld"><label for="vqNota">Nota <span style="font-weight:400">(opcional)</span></label><textarea id="vqNota" rows="2" placeholder="Ej.: parado por cambio de llantas"></textarea></div>
           <div class="rule" id="vqRegla"></div>
@@ -556,6 +661,7 @@ body:not(.admin) .needs-admin{display:none!important}
     <div class="card soon">
       <span class="pill">En preparación</span>
       <p style="margin:0">Este módulo se arma con lo que ustedes registran en el día a día: horas, horómetro, diésel, producción o mantenimientos, y cómo quieren medir su utilización.</p>
+      <div id="pxEquipos"></div>
       <button class="btn" data-go="logistica">Volver a Logística</button>
     </div>
   </section>
@@ -607,7 +713,10 @@ body:not(.admin) .needs-admin{display:none!important}
 </main>
 
 <datalist id="dlBanco"></datalist>
+<datalist id="dlEq"></datalist>
+<datalist id="dlProv"></datalist>
 <datalist id="dlCli"></datalist>
+<datalist id="dlLic"></datalist>
 <div class="login" id="loginView">
   <div class="logincard">
     <span class="mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 26 26"><path d="M3 17h13l2-6h4l2 3v3H3z" fill="#16202a"/><path d="M5 11l3-5h7l1 5z" fill="#16202a" opacity=".75"/><circle cx="7.5" cy="19.5" r="2.5" fill="#16202a"/><circle cx="19.5" cy="19.5" r="2.5" fill="#16202a"/></svg></span>
@@ -639,12 +748,13 @@ const TIPOS = {
   deposito: { l: "Pagado por depósito", ayuda: "No entra al efectivo. Se anota en Obs. con [DEP]." },
   adelanto: { l: "A cuenta (adelanto)", ayuda: "Entra efectivo: suma a los ingresos de la mesa." },
   despacho: { l: "Despacho contra adelanto", ayuda: "Sin monto. Se anota el ticket del adelanto con [A CTA]." },
+  factura:  { l: "Ya pagado (factura)", ayuda: "Sin monto: ya se pagó con factura. Lleva su guía y se descuenta de la factura." },
   gmesa:    { l: "Gasto de mesa", ayuda: "Sale del dinero de la mesa." },
   gcaja:    { l: "Gasto de caja", ayuda: "Sale de la caja fuerte, no toca la mesa." },
   bancodep: { l: "Depósito de caja al banco", ayuda: "Sale de la caja fuerte hacia el banco." }
 };
-const T_VENTA = ["venta", "deposito", "adelanto", "despacho"], T_GASTO = ["gmesa", "gcaja", "bancodep"];
-const T_TICKET = ["venta", "deposito", "adelanto"]; // generan ticket correlativo
+const T_VENTA = ["venta", "deposito", "factura", "adelanto", "despacho"], T_GASTO = ["gmesa", "gcaja", "bancodep"];
+const T_TICKET = ["venta", "deposito", "factura", "adelanto"]; // generan ticket correlativo
 const T_FORMULA = ["venta", "deposito"];            // venta = cantidad × precio
 
 const vigentes = movs => movs.filter(m => m.estado !== "anulado");
@@ -676,6 +786,8 @@ function celdas(m, pdf) {
     case "bancodep": caja = fmt(m.monto); obs = add(arrow + " (depósito al banco" + (m.banco ? " " + m.banco : "") + ")", obs); break;
     case "deposito": obs = add("[DEP] " + (m.banco ? m.banco + " " : "") + fmt(m.monto), obs); tag = true; break;
     case "despacho": obs = add("[A CTA] " + (m.ref || ""), obs); tag = true; break;
+    case "factura": obs = add("[FACT " + (m.facturaCodigo || "") + "] Guía " + (m.guia || ""), obs); tag = true; break;
+    case "factreg": obs = add("[FACTURA] " + fmt(m.monto) + " " + (m.pago === "efectivo" ? "efectivo" : "banco" + (m.banco ? " " + m.banco : "")), obs); tag = true; break;
   }
   if (pdf) obs = obs.replace(/ · /g, "; ");
   return { ing, mesa, caja, obs, tag };
@@ -693,7 +805,7 @@ function resumenItems(items) {
 const cantTxt = m => { const it = itemsDe(m); return it.length ? it.map(i => String(i.cantidad) + "m³").join("\n") : (m.cant || ""); };
 const matTxt = m => { const it = itemsDe(m); return it.length ? it.map(i => i.material || "").join("\n") : (m.material || ""); };
 const detalleTxt = m => itemsDe(m).map(i => String(i.cantidad) + "m³ " + (i.material || "")).join(" + ");
-const ticketTxt = m => m.tipo === "despacho" ? (m.ref || "") : (m.ticket || "");
+const ticketTxt = m => m.tipo === "despacho" ? (m.ref || "") : m.tipo === "factreg" ? (m.codigo || "") : (m.ticket || "");
 function pdfSafe(s) {
   return String(s ?? "").replace(/[→]/g, "->").replace(/[−–—]/g, "-").replace(/…/g, "...").replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/[^\n\x20-\x7E\u00A0-\u00FF]/g, "");
 }
@@ -728,7 +840,9 @@ function buildPdfDia(jsPDF, o) {
   const M = PDF_M, W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), TOP = M + 48;
   const R = t => ({ content: t, styles: { halign: "right" } });
   const head = [["N°", "Cant.", "Material", "Ticket / Fact.", "Cliente / Concepto", R("Ingreso (S/)"), R("Gasto mesa (S/)"), R("Gasto caja (S/)"), "Obs."]];
-  const body = o.movs.map((m, i) => {
+  const filas = o.movs.concat(o.facturas || []).sort((a, b) => num(a.orden) - num(b.orden));
+  const facTot = r2((o.facturas || []).filter(x => x.estado !== "anulado").reduce((a, x) => a + num(x.monto), 0));
+  const body = filas.map((m, i) => {
     const k = celdas(m, true);
     return [String(i + 1), pdfSafe(cantTxt(m)), pdfSafe(matTxt(m)), pdfSafe(ticketTxt(m)), pdfSafe(m.cliente), k.ing, k.mesa, k.caja, { content: pdfSafe(k.obs), styles: k.tag ? { fontStyle: "bold" } : {} }];
   });
@@ -736,7 +850,7 @@ function buildPdfDia(jsPDF, o) {
   const foot = [["", "", "", "", R("TOTALES"), R(fmt(c.ing)), R(fmt(c.mesa)), R(fmt(c.caja)), c.dep ? "[DEP] " + fmt(c.dep) : ""]];
   pdfTablaBW(doc, {
     head, body, foot, startY: TOP,
-    columnStyles: { 0: { cellWidth: 20, halign: "right" }, 1: { cellWidth: 38 }, 2: { cellWidth: 68 }, 3: { cellWidth: 44 }, 4: { cellWidth: "auto" }, 5: { cellWidth: 52, halign: "right" }, 6: { cellWidth: 52, halign: "right" }, 7: { cellWidth: 52, halign: "right" }, 8: { cellWidth: 80 } }
+    columnStyles: { 0: { cellWidth: 20, halign: "right" }, 1: { cellWidth: 38 }, 2: { cellWidth: 68 }, 3: { cellWidth: 56 }, 4: { cellWidth: "auto" }, 5: { cellWidth: 52, halign: "right" }, 6: { cellWidth: 52, halign: "right" }, 7: { cellWidth: 52, halign: "right" }, 8: { cellWidth: 80 } }
   });
   const socios = (o.socios && o.socios.length ? o.socios : ["Firma"]);
   const filasF = Math.ceil(socios.length / 2);
@@ -748,6 +862,7 @@ function buildPdfDia(jsPDF, o) {
     ["DIFERENCIA" + (c.dif === null ? "" : ": " + difTxt(c.dif).toUpperCase()), c.dif, 1], null,
     ["Gastos pagados de la caja fuerte", c.caja], ["Ventas por depósito bancario (informativo)", c.dep]
   ];
+  if (facTot) lineas.push(["Facturas emitidas (no entran al cuadre)", facTot]);
   if (c.anulados) lineas.push(["Tickets anulados (no suman)", null, 0, 1, String(c.anulados)]);
   const LH = 14, boxH = 14 + lineas.reduce((a, l) => a + (l ? LH : 6), 0);
   const need = boxH + 24 + filasF * 120 + 36;
@@ -817,7 +932,7 @@ function validarFila(v) {
   }
   if (vacio(v.cliente)) return "Falta el nombre del cliente.";
   const it = itemsDe(v);
-  if (v.tipo === "venta" || v.tipo === "deposito" || v.tipo === "despacho") {
+  if (v.tipo === "venta" || v.tipo === "deposito" || v.tipo === "despacho" || v.tipo === "factura") {
     if (!it.length) return "Elige el material.";
     for (let i = 0; i < it.length; i++) {
       const n = it.length > 1 ? " del producto " + (i + 1) : "";
@@ -826,12 +941,44 @@ function validarFila(v) {
     }
   }
   if (v.tipo === "despacho") { if (vacio(v.ref)) return "Falta el ticket del adelanto (ej.: t/445)."; return ""; }
+  if (v.tipo === "factura") { if (vacio(v.facturaId)) return "Elige la factura: escribe su número y elígela de la lista."; if (vacio(v.guia)) return "Falta el N° de guía."; return ""; }
   if (!(v.monto > 0)) return "Falta el monto de la venta (mayor que cero).";
   if (T_FORMULA.includes(v.tipo) && it.length && it.every(i => i.precioUnit > 0)) {
     const f = r2(it.reduce((a, i) => a + r2(i.cantidad * i.precioUnit), 0));
     if (Math.abs(f - v.monto) > 0.004 && vacio(v.obs)) return "La venta no coincide con la fórmula (" + it.map(i => fmt(i.cantidad) + " × " + fmt(i.precioUnit)).join(" + ") + " = " + fmt(f) + "). Escribe el motivo en Obs.";
   }
   return "";
+}
+/* --- Facturas: el avance se calcula con sus guías --- */
+const parteNum = c => { const m = String(c || "").match(/(\d+)\s*$/); return m ? Number(m[1]) : null; };
+function incCodigo(c) { const m = String(c || "").match(/^(.*?)(\d+)\s*$/); return m ? m[1] + String(Number(m[2]) + 1).padStart(m[2].length, "0") : ""; }
+function normCodigo(s, ref) {
+  const t = String(s || "").toUpperCase().replace(/\s+/g, "");
+  if (/^\d+$/.test(t) && ref) { const m = String(ref).match(/^(.*?)(\d+)$/); if (m) return m[1] + t.padStart(m[2].length, "0"); }
+  return t;
+}
+function juntarItems(items) {
+  const o = [];
+  items.forEach(i => { const x = o.find(y => y.productoId === i.productoId); if (x) x.cantidad = r2(num(x.cantidad) + num(i.cantidad)); else o.push(Object.assign({}, i, { cantidad: r2(num(i.cantidad)) })); });
+  return o;
+}
+function calcFactura(f) {
+  const items = Array.isArray(f.items) ? f.items : [], guias = Array.isArray(f.guias) ? f.guias : [], desp = {};
+  guias.forEach(g => (g.items || []).forEach(i => { const k = i.productoId || "?"; desp[k] = r2((desp[k] || 0) + num(i.cantidad)); }));
+  const m3 = r2(items.reduce((a, i) => a + num(i.cantidad), 0)), m3Desp = r2(Object.values(desp).reduce((a, x) => a + x, 0));
+  const completa = items.length > 0 && items.every(i => num(desp[i.productoId]) >= num(i.cantidad) - 0.004);
+  return Object.assign({}, f, { despachado: desp, m3, m3Desp, completa, nGuias: guias.length });
+}
+function faltaFactura(f) {
+  const c = calcFactura(f);
+  return (f.items || []).map(i => { const d = num(c.despachado[i.productoId]); return { productoId: i.productoId, material: i.material || "", pedido: num(i.cantidad), desp: d, falta: r2(Math.max(0, num(i.cantidad) - d)) }; });
+}
+/* m³ de una guía que pasan lo que falta de la factura (sin contar la misma guía si se está editando) */
+function excesoGuia(f, items, movId) {
+  const base = Object.assign({}, f, { guias: (f.guias || []).filter(g => g.movId !== movId) }), falta = {}, tot = {};
+  faltaFactura(base).forEach(x => { falta[x.productoId] = x.falta; });
+  items.forEach(i => { if (i.productoId) tot[i.productoId] = r2((tot[i.productoId] || 0) + num(i.cantidad)); });
+  return Object.entries(tot).filter(([pid, c]) => c > num(falta[pid]) + 0.004).map(([pid, c]) => ({ productoId: pid, cantidad: c, falta: num(falta[pid]) }));
 }
 /*PURE-END*/
 
@@ -856,14 +1003,17 @@ const TAB_ID = Math.random().toString(36).slice(2, 10);
 
 const DEFAULT_BANCOS = ["BCP", "BBVA", "Interbank", "Banco de la Nación", "Scotiabank", "Yape", "Plin"];
 const DEFAULT_SOCIOS = ["Carlos Bazán", "Luis Bazán"];
-const VOLQUETES = [{ id: "volvo-500", nombre: "Volvo 500" }, { id: "volvo-480", nombre: "Volvo 480" }, { id: "100-pies", nombre: "100 pies" }];
+const VOLQ_BASE = [{ id: "volvo-500", nombre: "Volvo 500" }, { id: "volvo-480", nombre: "Volvo 480" }, { id: "100-pies", nombre: "100 pies" }];
+let VOLQUETES = VOLQ_BASE.map(v => Object.assign({ ids: [v.id] }, v));
 const META_DIA = [0, 2, 2, 2, 2, 2, 1];
-const COLS = ["mov", "volquetes"];
+const TANQUES = [{ id: "t1", nombre: "Tanque 1" }, { id: "t2", nombre: "Tanque 2" }, { id: "t3", nombre: "Tanque 3" }];
+const TIPOS_EQ = ["Volquete", "Excavadora", "Cargador frontal", "Chancadora", "Grupo electrógeno", "Motobomba", "Camioneta", "Otro"];
+const COLS = ["mov", "volquetes", "diesel"];
 
 /* ---------- state ---------- */
 let db = null, writable = true, myId = null;
 const ROLES = { admin: "Administrador", editor: "Registra", lector: "Solo ve" };
-const S = { mes: mesDe(hoy()), dia: hoy(), cache: {}, live: {}, fetched: {}, config: {}, view: "inicio", vq: VOLQUETES[0].id, diasMes: [], productos: [], clientes: [], contador: undefined, usuarios: [], rol: "", inputsDia: null, dirtyIni: false, dirtyFin: false };
+const S = { mes: mesDe(hoy()), dia: hoy(), cache: {}, live: {}, fetched: {}, config: {}, view: "inicio", vq: VOLQUETES[0].id, diasMes: [], productos: [], clientes: [], equipos: [], equiposCargados: false, eqFiltro: "todos", tanques: {}, dFiltro: "todos", dFEq: "todos", dFMov: "todos", facturas: [], faSeg: "pend", faOpen: new Set(), contador: undefined, usuarios: [], rol: "", inputsDia: null, dirtyIni: false, dirtyFin: false };
 const unsubs = [], charts = {};
 
 function cfg() {
@@ -904,8 +1054,11 @@ function errMsg(e) {
   if (c === "resource_exhausted") return "Demasiadas operaciones seguidas. Espera unos segundos e inténtalo otra vez.";
   if (c === "revoked") return "Se cerró el acceso a la base de datos. Vuelve a abrir la app.";
   if (c === "ocupado") return "Otra persona está registrando un ticket en este momento. Vuelve a presionar Agregar.";
+  if (c === "cancelado") return "";
+  if (c === "sin_equipo") return "Ese equipo no está en la lista. Elígelo de las sugerencias o agrégalo en Logística → Equipos.";
+  if (c === "sin_factura") return "No se encontró la factura. Revisa en Ventas → Facturas y guías.";
   if (c === "permission-denied") return "No tienes permiso para esto. Pide a un administrador que revise tu acceso en Ajustes → Usuarios.";
-  if (c === "offline" || c === "unavailable") return "Sin internet. Los tickets necesitan conexión para sacar el número correlativo. Inténtalo cuando vuelva la señal.";
+  if (c === "offline" || c === "unavailable") return "Sin internet. Los tickets y las facturas necesitan conexión (el número correlativo y las guías no deben repetirse). Inténtalo cuando vuelva la señal.";
   if (c === "sin_contador") return "Falta el número del primer ticket. Escríbelo en la columna Ticket o en Ajustes.";
   return "No se pudo guardar por un problema de conexión. Revisa tu internet e inténtalo otra vez.";
 }
@@ -922,6 +1075,10 @@ function tile(lbl, val, sub, cls = "", subCls = "") { return `<div class="tile $
 function fillDatalists() {
   $("#dlBanco").innerHTML = cfg().bancos.map(o => `<option value="${esc(o)}"></option>`).join("");
   $("#dlCli").innerHTML = S.clientes.map(c => `<option value="${esc(c.nombre)}"></option>`).join("");
+  $("#dlLic").innerHTML = [...new Set(todasGuias().map(g => g.licencia).filter(Boolean))].map(l => `<option value="${esc(l)}"></option>`).join("");
+  $("#dlEq").innerHTML = S.equipos.map(e => `<option value="${esc(e.nombre)}"></option>`).join("");
+  const provs = [...new Set(Object.values(S.cache).flatMap(m => m.diesel || []).map(d => d.proveedor).filter(Boolean))];
+  $("#dlProv").innerHTML = provs.map(p => `<option value="${esc(p)}"></option>`).join("");
 }
 
 /* ---------- data loading ---------- */
@@ -970,23 +1127,27 @@ function estadoDia(f) {
 }
 
 /* ---------- routing ---------- */
-const VENTAS_SUB = { "ventas": "dia", "ventas-clientes": "clientes", "ventas-cierres": "cierres", "ventas-resumen": "resumen" };
+const VENTAS_SUB = { "ventas": "dia", "ventas-facturas": "facturas", "ventas-clientes": "clientes", "ventas-cierres": "cierres", "ventas-resumen": "resumen" };
 const PROXIMOS = { excavadoras: "Excavadoras", chancadora: "Chancadora", cargadores: "Cargadores frontales" };
-const PANELS = ["inicio", "ventas", "productos", "logistica", "volquetes", "volquete", "proximo", "ajustes"];
+const PANELS = ["inicio", "ventas", "productos", "logistica", "equipos", "diesel", "volquetes", "volquete", "proximo", "ajustes"];
+const PROX_TIPO = { excavadoras: "Excavadora", chancadora: "Chancadora", cargadores: "Cargador frontal" };
 function viewPanel(v) {
   if (VENTAS_SUB[v]) return "ventas";
+  if (v === "diesel") return "diesel";
+  if (v === "equipos" || v === "diesel-equipos") return "equipos";
   if (v.startsWith("volquete-")) return "volquete";
   if (PROXIMOS[v]) return "proximo";
   return ["inicio", "productos", "logistica", "volquetes", "ajustes"].includes(v) ? v : "inicio";
 }
 function go(v, push = true) {
+  if (v === "diesel-equipos") v = "equipos";
   if (v.startsWith("volquete-")) { const id = v.slice(9); if (!VOLQUETES.some(x => x.id === id)) v = "volquetes"; else S.vq = id; }
   const panel = viewPanel(v); if (panel === "inicio") v = "inicio";
   S.view = v;
   PANELS.forEach(p => { $("#v-" + p).hidden = p !== panel; });
   if (panel === "ventas") {
     const sub = VENTAS_SUB[v];
-    ["dia", "clientes", "cierres", "resumen"].forEach(s => { $("#s-" + s).hidden = s !== sub; });
+    ["dia", "facturas", "clientes", "cierres", "resumen"].forEach(s => { $("#s-" + s).hidden = s !== sub; });
     $$("#ventasSeg button").forEach(b => b.setAttribute("aria-selected", b.dataset.go === v ? "true" : "false"));
   }
   if (panel === "proximo") $("#pxTitulo").textContent = PROXIMOS[v];
@@ -998,7 +1159,9 @@ function renderCrumbs() {
   const v = S.view, p = viewPanel(v), c = [["inicio", "Inicio"]];
   if (p === "ventas") c.push(["ventas", "Ventas"]);
   if (p === "productos") c.push(["productos", "Productos"]);
-  if (["logistica", "volquetes", "volquete", "proximo"].includes(p)) c.push(["logistica", "Logística"]);
+  if (["logistica", "equipos", "diesel", "volquetes", "volquete", "proximo"].includes(p)) c.push(["logistica", "Logística"]);
+  if (p === "diesel") c.push(["diesel", "Diésel"]);
+  if (p === "equipos") c.push(["equipos", "Equipos"]);
   if (p === "volquetes" || p === "volquete") c.push(["volquetes", "Volquetes"]);
   if (p === "volquete") c.push([v, vqNombre(S.vq)]);
   if (p === "proximo") c.push([v, PROXIMOS[v]]);
@@ -1015,9 +1178,12 @@ function renderAll() {
 function renderView() {
   const p = viewPanel(S.view);
   if (p === "inicio") renderInicio();
-  else if (p === "ventas") { const s = VENTAS_SUB[S.view]; if (s === "dia") renderDia(); else if (s === "clientes") renderClientes(); else if (s === "cierres") renderCierres(); else renderResumen(); }
+  else if (p === "ventas") { const s = VENTAS_SUB[S.view]; if (s === "dia") renderDia(); else if (s === "facturas") renderFacturas(); else if (s === "clientes") renderClientes(); else if (s === "cierres") renderCierres(); else renderResumen(); }
   else if (p === "productos") renderProductos();
   else if (p === "logistica") renderLogistica();
+  else if (p === "diesel") renderDiesel();
+  else if (p === "equipos") renderEquipos();
+  else if (p === "proximo") renderProximo();
   else if (p === "volquetes") renderVolquetes();
   else if (p === "volquete") renderVolquete();
   else if (p === "ajustes") renderAjustes();
@@ -1027,13 +1193,19 @@ function renderInicio() {
   const h = new Date().getHours();
   $("#homeHello").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + ", " + cfg().empresa;
   const t = hoy(), c = calcDia(movsDia(t), diaDoc(t));
-  $("#homeVentas").innerHTML = mesDe(t) === S.mes ? `<span>Hoy: <b>${soles(c.ing)}</b> ingresos · neto mesa <b>${soles(c.neto)}</b></span>${c.dif !== null ? `<span>Cuadre: <b>${difTxt(c.dif)}${Math.abs(c.dif) >= 0.005 ? " " + soles(Math.abs(c.dif)) : ""}</b></span>` : ""}` : "";
+  const np = facPendientes().length;
+  $("#homeVentas").innerHTML = (mesDe(t) === S.mes ? `<span>Hoy: <b>${soles(c.ing)}</b> ingresos · neto mesa <b>${soles(c.neto)}</b></span>${c.dif !== null ? `<span>Cuadre: <b>${difTxt(c.dif)}${Math.abs(c.dif) >= 0.005 ? " " + soles(Math.abs(c.dif)) : ""}</b></span>` : ""}` : "") +
+    (np ? `<span>Facturas por despachar: <b>${np}</b></span>` : "");
   const pr = promedio(VOLQUETES.map(v => utilVolq(S.mes, v.id).util));
-  $("#homeLog").innerHTML = `<span>Volquetes: <b>${pctTxt(pr)}</b> de utilización en ${esc(nombreMes(S.mes).toLowerCase())}</span>`;
+  $("#homeLog").innerHTML = `<span>Volquetes: <b>${pctTxt(pr)}</b> de utilización en ${esc(nombreMes(S.mes).toLowerCase())}</span><span>Diésel en tanques: <b>${nf(totalDiesel())} gal</b></span>`;
   const pa = prodActivos();
   $("#homeProd").innerHTML = pa.length ? pa.map(p => `<span>${esc(p.abrev || p.nombre)} <b>S/ ${fmt(p.precio)}</b></span>`).join("") : "<span>Sin productos todavía</span>";
 }
 function renderLogistica() {
+  const act = S.equipos.filter(e => e.activo !== false), cuenta = {};
+  act.forEach(e => { const k = e.tipo || "Sin tipo"; cuenta[k] = (cuenta[k] || 0) + 1; });
+  $("#logEqMeta").innerHTML = act.length ? Object.entries(cuenta).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<span>${esc(k)} <b>${n}</b></span>`).join("") : "<span>Sin equipos todavía</span>";
+  $("#logDieselMeta").innerHTML = TANQUES.map(t => `<span>${esc(tanqueNombre(t.id))} <b>${nf(saldoTanque(t.id))}</b></span>`).join("") + `<span>Total <b>${nf(totalDiesel())} gal</b></span>`;
   $("#logVolqMeta").innerHTML = VOLQUETES.map(v => `<span>${esc(v.nombre)} <b>${pctTxt(utilVolq(S.mes, v.id).util)}</b></span>`).join("");
 }
 
@@ -1065,42 +1237,46 @@ function renderDia() {
     : est === "cambio" ? `<span class="pill warn">Cambió después del cierre: vuelve a cerrar</span>`
     : est === "abierto" ? `<span class="pill">Abierto</span>` : `<span class="pill">Sin movimientos</span>`;
   const nTk = vigentes(movs).filter(m => T_TICKET.includes(m.tipo)).length;
+  const facs = facturasDia(f), facOk = facs.filter(x => x.estado !== "anulado"), facTot = r2(sum(facOk, x => x.monto));
+  const filas = movs.concat(facs).sort((a, b) => num(a.orden) - num(b.orden));
   $("#diaTiles").innerHTML =
     tile("Ingresos (efectivo)", soles(c.ing), nTk + " ticket(s)" + (c.anulados ? " · " + c.anulados + " anulado(s)" : "")) +
     tile("Gastos de mesa", soles(c.mesa), "") +
     tile("Neto de mesa", soles(c.neto), "Lo vendido neto: debe cuadrar", "key") +
     tile("Cuadre", c.dif === null ? "—" : difTxt(c.dif) + (Math.abs(c.dif) >= 0.005 ? " " + soles(Math.abs(c.dif)) : ""), c.dif === null ? (c.ini === null ? "Falta el sencillo inicial" : "Falta el conteo al cierre") : "Contado − sencillo vs. neto de mesa", "", c.dif === null ? "" : Math.abs(c.dif) < 0.005 ? "up" : "down") +
     (c.caja ? tile("Gastos de caja fuerte", soles(c.caja), "No salen de la mesa") : "") +
-    (c.dep ? tile("Ventas por depósito", soles(c.dep), "Informativo, no es efectivo") : "");
+    (c.dep ? tile("Ventas por depósito", soles(c.dep), "Informativo, no es efectivo") : "") +
+    (facOk.length ? tile("Facturas del día", soles(facTot), facOk.length + " factura(s) · no entran al cuadre") : "");
   const t = $("#tMov");
-  if (!movs.length) t.innerHTML = `<tbody><tr><td class="empty wide" colspan="10">Aún no hay movimientos el ${esc(fechaTxt(f))}. ${writable ? "Agrega el primer ticket en la fila de abajo." : ""}</td></tr></tbody>`;
+  if (!filas.length) t.innerHTML = `<tbody><tr><td class="empty wide" colspan="10">Aún no hay movimientos el ${esc(fechaTxt(f))}. ${writable ? "Agrega el primer ticket en la fila de abajo." : ""}</td></tr></tbody>`;
   else t.innerHTML = `<thead><tr><th class="num">N°</th><th>Cant.</th><th>Material</th><th>Ticket</th><th>Cliente / Concepto</th><th class="num">Ingreso</th><th class="num">Gasto mesa</th><th class="num">Gasto caja</th><th>Obs.</th><th></th></tr></thead><tbody>` +
-    movs.map((m, i) => {
+    filas.map((m, i) => {
       const k = celdas(m, false), an = m.estado === "anulado";
-      const acts = an ? `<button class="btn small" data-act="vermotivo" data-id="${esc(m.id)}">Ver motivo</button>`
+      const acts = m.tipo === "factreg" ? `<button class="btn small" data-act="verfac" data-id="${esc(m.facId)}">Ver factura</button>`
+        : an ? `<button class="btn small" data-act="vermotivo" data-id="${esc(m.id)}">Ver motivo</button>`
         : `<span class="needs-write"><button class="btn small" data-act="movedit" data-id="${esc(m.id)}">Editar</button>${T_TICKET.includes(m.tipo) || m.tipo === "despacho" ? `<button class="btn small ghost" data-act="anular" data-id="${esc(m.id)}">Anular</button>` : `<button class="btn small ghost" data-act="movdel" data-id="${esc(m.id)}">Borrar</button>`}</span>`;
       return `<tr class="${an ? "anul" : ""}">
       <td class="num" data-l="N°">${i + 1}</td><td data-l="Cant.">${esc(cantTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Material">${esc(matTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Ticket"><b>${esc(ticketTxt(m))}</b></td>
-      <td data-l="Cliente / Concepto" class="wide">${esc(m.cliente || "")}${m.placa ? `<span class="by">Placa ${esc(m.placa)}</span>` : ""}${byTag(m)}</td>
+      <td data-l="Cliente / Concepto" class="wide">${esc(m.cliente || "")}${m.ruc && m.tipo === "factreg" ? `<span class="by">RUC ${esc(m.ruc)}</span>` : ""}${m.placa ? `<span class="by">Placa ${esc(m.placa)}${m.licencia ? " · Lic. " + esc(m.licencia) : ""}</span>` : ""}${byTag(m)}</td>
       <td class="num" data-l="Ingreso">${k.ing}</td><td class="num" data-l="Gasto mesa">${k.mesa}</td><td class="num" data-l="Gasto caja">${k.caja}</td>
       <td data-l="Obs." class="wide${k.tag ? " tag" : ""}">${an ? `<span class="pill bad">ANULADO</span> ` : ""}${esc(an ? (m.motivoAnulacion || "") : k.obs)}</td>
       <td class="acts">${acts}</td></tr>`;
     }).join("") +
     `</tbody><tfoot><tr><td></td><td></td><td></td><td></td><td style="text-align:right">TOTALES</td><td class="num" data-l="Ingresos">${fmt(c.ing)}</td><td class="num" data-l="Gastos mesa">${fmt(c.mesa)}</td><td class="num" data-l="Gastos caja">${fmt(c.caja)}</td><td data-l="Depósitos (inf.)">${c.dep ? "[DEP] " + fmt(c.dep) : ""}</td><td></td></tr></tfoot>`;
-  $("#resumenDia").innerHTML = resumenHTML(c);
+  $("#resumenDia").innerHTML = resumenHTML(c, facTot);
   const bad = ["#iniMon", "#iniBil", "#finMon", "#finBil"].some(id => Number.isNaN(parseMonto($(id).value)));
   $("#cierreMsg").textContent = bad ? "Revisa los montos del sencillo y del conteo: deben ser números (ej.: 150.50)." : c.ini === null ? "Para cerrar el día, registra el sencillo inicial." : c.fin === null ? "Para cerrar el día, escribe el efectivo contado (monedas y billetes)." : "";
   $("#cierreMsg").className = "hintline" + ($("#cierreMsg").textContent ? " warn" : "");
   $("#cerrarBtn").textContent = est === "cerrado" ? "Volver a cerrar y descargar PDF" : "Cerrar día y descargar PDF";
   renderQuickMeta();
 }
-function resumenHTML(c) {
+function resumenHTML(c, facTot) {
   const row = (l, v, cls = "") => `<div class="rrow ${cls}"><span>${esc(l)}</span><i></i><b>${v === null ? "—" : soles(v)}</b></div>`;
   const dcls = c.dif === null ? "" : Math.abs(c.dif) < 0.005 ? " ok" : " mal";
   return `<div class="resbox">${row("Total ingresos (efectivo)", c.ing)}${row("(−) Gastos de mesa", c.mesa)}${row("= Neto de mesa (vendido neto)", c.neto, "tot")}<div class="rsep"></div>` +
     `${row("Sencillo inicial (monedas + billetes)", c.ini)}${row("Contado al cierre, todo (incluye sencillo)", c.fin)}${row("= Efectivo neto (contado − sencillo)", c.efNeto, "tot")}` +
     `${row("Diferencia" + (c.dif === null ? "" : ": " + difTxt(c.dif)), c.dif, "tot big" + dcls)}<div class="rsep"></div>` +
-    `${c.caja ? row("Gastos pagados de la caja fuerte", c.caja, "inf") : ""}${row("Ventas por depósito bancario (informativo)", c.dep, "inf")}${c.anulados ? `<div class="rrow inf"><span>Tickets anulados (no suman)</span><i></i><b>${c.anulados}</b></div>` : ""}</div>`;
+    `${c.caja ? row("Gastos pagados de la caja fuerte", c.caja, "inf") : ""}${row("Ventas por depósito bancario (informativo)", c.dep, "inf")}${facTot ? row("Facturas emitidas (no entran al cuadre)", facTot, "inf") : ""}${c.anulados ? `<div class="rrow inf"><span>Tickets anulados (no suman)</span><i></i><b>${c.anulados}</b></div>` : ""}</div>`;
 }
 function diaInputs() {
   const v = id => { const x = parseMonto($(id).value); return x === null || Number.isNaN(x) ? null : x; };
@@ -1114,7 +1290,7 @@ function prodOptions(sel) {
   return `<option value="">${pa.length ? "Elige el material…" : "Primero crea productos"}</option>` + pa.map(p => `<option value="${esc(p.id)}"${p.id === sel ? " selected" : ""}>${esc(prodEtiqueta(p))}</option>`).join("");
 }
 function crearItems(box, pre, items, onChange) {
-  const ed = { items: items.length ? items : [{ productoId: "", cant: "" }] };
+  const ed = { items: items.length ? items : [{ productoId: "", cant: "" }], addTxt: "+ Otro producto en el mismo ticket" };
   ed.precioDe = it => it.precioUnit > 0 ? it.precioUnit : ((prodById(it.productoId) || {}).precio || 0);
   ed.render = () => {
     const multi = ed.items.length > 1;
@@ -1123,7 +1299,7 @@ function crearItems(box, pre, items, onChange) {
       <div class="q"><label for="${pre}Cant${i}">Cant. m³ <span class="req">*</span></label><input id="${pre}Cant${i}" data-i="${i}" data-k="cant" inputmode="decimal" placeholder="5" value="${esc(it.cant)}" autocomplete="off"></div>
       <div class="q"><label>Subtotal</label><output id="${pre}Sub${i}">—</output></div>
       <div class="q">${multi ? `<button type="button" class="btn small ghost" data-del="${i}" aria-label="Quitar producto ${i + 1}">Quitar</button>` : ""}</div>
-    </div>`).join("") + `<button type="button" class="btn small" data-add="1">+ Otro producto en el mismo ticket</button>`;
+    </div>`).join("") + `<button type="button" class="btn small" data-add="1">${esc(ed.addTxt)}</button>`;
     onChange(false);
   };
   ed.calc = conFormula => {
@@ -1171,17 +1347,19 @@ function quickTipo(t) {
   const en = (id, on) => { $(id).disabled = !on; };
   en("#qPlaca", !gasto);
   $("#qItems").hidden = gasto || t === "adelanto";
-  en("#qVenta", !gasto && t !== "despacho"); en("#qGasto", !T_VENTA.includes(t));
+  en("#qVenta", !gasto && t !== "despacho" && t !== "factura"); en("#qGasto", !T_VENTA.includes(t));
+  ["#qFacBox", "#qGuiaBox", "#qLicBox"].forEach(id => { $(id).hidden = t !== "factura"; });
+  if (t === "factura" && !$("#qGuia").value) $("#qGuia").value = sigGuia();
   const extra = $("#qExtra"), lbl = $("#qExtraLbl");
   if (t === "deposito" || t === "bancodep") { lbl.textContent = "Banco"; extra.placeholder = "BCP"; extra.setAttribute("list", "dlBanco"); en("#qExtra", true); }
   else if (t === "despacho") { lbl.innerHTML = 'Ticket adelanto <span class="req">*</span>'; extra.placeholder = "t/445"; extra.removeAttribute("list"); en("#qExtra", true); }
   else { lbl.textContent = "Banco"; extra.placeholder = ""; extra.removeAttribute("list"); en("#qExtra", false); extra.value = ""; }
   $("#qClienteLbl").innerHTML = (gasto ? "Concepto" : "Cliente") + (t === "bancodep" ? "" : ' <span class="req">*</span>');
   $("#qCliente").placeholder = gasto ? (t === "bancodep" ? "Depósito al banco" : "Pago quincena Alberto") : "Escribe la primera letra";
-  $$("#qVenta,#qGasto").forEach(i => { const lb = $(`label[for="${i.id}"]`); lb.innerHTML = (i.id === "qVenta" ? "Venta S/" : "Gasto S/") + ((i.id === "qVenta" && (!t || (T_VENTA.includes(t) && t !== "despacho"))) || (i.id === "qGasto" && gasto) ? ' <span class="req">*</span>' : ""); });
+  $$("#qVenta,#qGasto").forEach(i => { const lb = $(`label[for="${i.id}"]`); lb.innerHTML = (i.id === "qVenta" ? "Venta S/" : "Gasto S/") + ((i.id === "qVenta" && (!t || (T_VENTA.includes(t) && t !== "despacho" && t !== "factura"))) || (i.id === "qGasto" && gasto) ? ' <span class="req">*</span>' : ""); });
   if (gasto) { $("#qPlaca").value = ""; $("#qVenta").value = ""; Q.manual = false; }
   if (t && !T_GASTO.includes(t)) $("#qGasto").value = "";
-  if (t === "despacho") $("#qVenta").value = "";
+  if (t === "despacho" || t === "factura") $("#qVenta").value = "";
   calcQuick(); renderQuickMeta();
 }
 function calcQuick() {
@@ -1198,13 +1376,22 @@ function calcQuick() {
   } else if (conFormula && !Q.manual) venta.value = "";
   if (t === "adelanto") msg = "A cuenta: escribe el monto que dejó el cliente.";
   if (t === "despacho") msg = "Despacho contra adelanto: sin monto. Escribe el ticket del adelanto.";
-  venta.classList.toggle("manual", warn);
+  if (t === "factura") {
+    const f = facById(QF.id);
+    if (!f) msg = "Ya pagado con factura: escribe el número de la factura y elígela. Solo salen las que faltan despachar.";
+    else {
+      const ex = excesoGuia(f, QI.listos().filter(i => i.productoId && i.cantidad > 0), null);
+      msg = `Factura <b>${esc(f.codigo)}</b> · ${esc(f.razonSocial || "")} · falta: ` + faltaFactura(f).map(x => `${esc(x.material)} <b>${nf(x.falta)} m³</b>`).join(" · ");
+      if (ex.length) { msg += `<br>Este carro pasa lo que falta (${ex.map(x => esc(matNombre(x.productoId)) + ": lleva " + nf(x.cantidad) + ", falta " + nf(x.falta) + " m³").join("; ")}). Escribe el motivo en Obs.`; warn = true; }
+    }
+  }
+  venta.classList.toggle("manual", warn && t !== "factura");
   hint.innerHTML = msg; hint.className = "qhint" + (warn ? " warn" : "");
-  $("#qObsLbl").innerHTML = warn ? 'Motivo del cambio <span class="req">*</span>' : "Obs.";
+  $("#qObsLbl").innerHTML = warn ? (t === "factura" ? 'Motivo del exceso' : 'Motivo del cambio') + ' <span class="req">*</span>' : "Obs.";
 }
 function resetQuick(t) {
-  ["#qCliente", "#qPlaca", "#qVenta", "#qGasto", "#qExtra", "#qObs", "#qTicketIni"].forEach(id => { $(id).value = ""; });
-  Q.manual = false; cerrarCombo(); QI.reset();
+  ["#qCliente", "#qPlaca", "#qVenta", "#qGasto", "#qExtra", "#qObs", "#qTicketIni", "#qFac", "#qGuia", "#qLic"].forEach(id => { $(id).value = ""; });
+  Q.manual = false; QF.id = null; cerrarCombo(); cerrarFac(); QI.reset();
   quickTipo(t);
 }
 function initQuick() {
@@ -1216,22 +1403,27 @@ function initQuick() {
   $("#qVenta").addEventListener("input", () => { Q.manual = true; calcQuick(); });
   $("#qVenta").addEventListener("blur", e => { const v = parseMonto(e.target.value); if (v !== null && !Number.isNaN(v)) e.target.value = fmt(v); });
   $("#qGasto").addEventListener("input", e => { if (e.target.value && !T_GASTO.includes($("#qTipo").value)) quickTipo("gmesa"); });
-  initCombo();
+  initCombo(); initFacCombo();
   $("#quickForm").addEventListener("submit", async e => {
     e.preventDefault();
-    if (comboAbierto()) return;
+    if (comboAbierto() || !$("#qFacList").hidden) return;
     if (!db) { $("#qErr").textContent = "Todavía no hay conexión con la base de datos."; return; }
     const t = $("#qTipo").value, val = id => $(id).value.trim();
     const gasto = T_GASTO.includes(t);
     const items = gasto || t === "adelanto" ? [] : QI.listos();
     const v = Object.assign({ tipo: t, fecha: S.dia, cliente: val("#qCliente"), placa: gasto ? "" : val("#qPlaca").toUpperCase() }, resumenItems(items), {
-      monto: t === "despacho" ? null : parseMonto(gasto ? val("#qGasto") : val("#qVenta")),
+      monto: t === "despacho" || t === "factura" ? null : parseMonto(gasto ? val("#qGasto") : val("#qVenta")),
       banco: (t === "deposito" || t === "bancodep") ? val("#qExtra") : "", ref: t === "despacho" ? val("#qExtra") : "", obs: val("#qObs")
     });
     if (Number.isNaN(v.monto)) v.monto = null;
     if (t === "bancodep" && !v.cliente) v.cliente = "Depósito al banco";
     if (t === "despacho" && v.ref && /^\d+$/.test(v.ref)) v.ref = "t/" + v.ref;
-    const err = validarFila(v);
+    let fac = null;
+    if (t === "factura") {
+      fac = facById(QF.id);
+      Object.assign(v, { facturaId: fac ? fac.id : "", facturaCodigo: fac ? fac.codigo : "", ruc: fac ? fac.ruc || "" : "", guia: normCodigo(val("#qGuia"), sigGuia()), licencia: val("#qLic").toUpperCase() });
+    }
+    const err = validarFila(v) || (t === "factura" ? chequeoFactura(v, null) : "");
     if (err) { $("#qErr").textContent = err; return; }
     let ini = null;
     if (T_TICKET.includes(t) && S.contador === null) {
@@ -1241,9 +1433,17 @@ function initQuick() {
     $("#qSave").disabled = true; $("#qErr").textContent = "";
     try {
       const tk = await guardarNueva(v, ini);
-      resetQuick(gasto ? t : "");
-      $(gasto ? "#qCliente" : "#qTipo").focus();
-      toast(tk ? "Ticket t/" + tk + " guardado." : "Fila agregada.");
+      if (t === "factura") {
+        resetQuick("factura");
+        const sigue = !calcFactura(Object.assign({}, fac, { guias: (fac.guias || []).concat([{ items: itemsDe(v) }]) })).completa;
+        $("#qGuia").value = incCodigo(v.guia) || "";
+        if (sigue) elegirFactura(fac); else $("#qFac").focus();
+        toast("Ticket t/" + tk + " · guía " + v.guia + " descontada de " + fac.codigo + (sigue ? "." : ". ¡Factura despachada completa!"));
+      } else {
+        resetQuick(gasto ? t : "");
+        $(gasto ? "#qCliente" : "#qTipo").focus();
+        toast(tk ? "Ticket t/" + tk + " guardado." : "Fila agregada.");
+      }
     } catch (er) { $("#qErr").textContent = errMsg(er); }
     finally { $("#qSave").disabled = false; }
   });
@@ -1257,14 +1457,20 @@ async function guardarNueva(v, inicial) {
   let n = null;
   if (T_TICKET.includes(v.tipo)) {
     if (navigator.onLine === false) throw { code: "offline" };
-    const ref = db.doc("contadores/ticket");
+    const ref = db.doc("contadores/ticket"), fRef = v.tipo === "factura" ? db.doc("facturas/" + v.facturaId) : null;
     n = await db.runTransaction(async tx => {
       const s = await tx.get(ref), d = s.exists ? (s.data() || {}) : {};
+      const fs = fRef ? await tx.get(fRef) : null;
+      if (fRef && !fs.exists) throw { code: "sin_factura" };
       const ult = Number.isFinite(d.ultimo) ? d.ultimo : (inicial > 0 ? inicial - 1 : null);
       if (ult === null) throw { code: "sin_contador" };
-      const k = ult + 1;
+      const k = ult + 1, mv = Object.assign({}, body, { ticket: "t/" + k, ticketN: k });
       tx.set(ref, { ultimo: k, actualizadoPor: myId, actualizadoEn: now });
-      tx.set(movRef, Object.assign({}, body, { ticket: "t/" + k, ticketN: k }));
+      tx.set(movRef, mv);
+      if (fRef) { // la guía se descuenta de la factura en la misma transacción
+        const f = fs.data() || {}, g = guiaDe(Object.assign({ id: movRef.id }, mv));
+        tx.set(fRef, calcFactura(Object.assign({}, f, { guias: (f.guias || []).filter(x => x.movId !== g.movId).concat([g]) })));
+      }
       return k;
     });
   } else {
@@ -1272,14 +1478,17 @@ async function guardarNueva(v, inicial) {
     await movRef.set(body);
   }
   delete S.fetched[mes + "|mov"];
-  if (T_VENTA.includes(v.tipo)) recordarCliente(v.cliente, v.placa).catch(() => {});
+  if (T_VENTA.includes(v.tipo)) recordarCliente(v.cliente, v.placa, v.ruc).catch(() => {});
   return n;
 }
-async function recordarCliente(nombre, placa) {
+async function recordarCliente(nombre, placa, ruc) {
   const n = norm(nombre); if (!n) return;
   const c = S.clientes.find(x => norm(x.nombre) === n);
-  if (!c) await db.collection("clientes").doc().set({ nombre: nombre.trim(), placa: placa || "", creadoPor: myId, creadoEn: new Date().toISOString() });
-  else if (placa && !c.placa) await db.doc("clientes/" + c.id).update({ placa });
+  if (!c) await db.collection("clientes").doc().set({ nombre: nombre.trim(), placa: placa || "", ruc: ruc || "", creadoPor: myId, creadoEn: new Date().toISOString() });
+  else {
+    const up = {}; if (placa && !c.placa) up.placa = placa; if (ruc && !c.ruc) up.ruc = ruc;
+    if (Object.keys(up).length) await db.doc("clientes/" + c.id).update(up);
+  }
 }
 
 /* --- autocompletado de clientes --- */
@@ -1289,7 +1498,7 @@ function cerrarCombo() { $("#qCliList").hidden = true; $("#qCliente").setAttribu
 function buscarClientes(q) {
   const n = norm(q); if (!n) return [];
   const empieza = [], contiene = [];
-  S.clientes.forEach(c => { const k = norm(c.nombre); if (k.startsWith(n) || k.split(" ").some(w => w.startsWith(n))) empieza.push(c); else if (k.includes(n) || norm(c.placa).includes(n)) contiene.push(c); });
+  S.clientes.forEach(c => { const k = norm(c.nombre); if (k.startsWith(n) || k.split(" ").some(w => w.startsWith(n))) empieza.push(c); else if (k.includes(n) || norm(c.placa).includes(n) || String(c.ruc || "").startsWith(n)) contiene.push(c); });
   const by = (a, b) => a.nombre.localeCompare(b.nombre, "es");
   return empieza.sort(by).concat(contiene.sort(by)).slice(0, 8);
 }
@@ -1336,17 +1545,18 @@ function fld(id, label, value, o = {}) {
 }
 function openEdit(rec) {
   if (!db) return;
-  const gasto = T_GASTO.includes(rec.tipo), tk = T_TICKET.includes(rec.tipo);
-  const tipos = gasto ? T_GASTO : tk ? T_TICKET : ["despacho"];
+  const gasto = T_GASTO.includes(rec.tipo), tk = T_TICKET.includes(rec.tipo), fac = rec.tipo === "factura";
+  const tipos = gasto ? T_GASTO : fac ? ["factura"] : tk ? T_TICKET.filter(k => k !== "factura") : ["despacho"];
   const close = modal(`<header><h3>Editar ${tk ? "ticket " + esc(rec.ticket) : gasto ? "gasto" : "despacho"}</h3><button class="btn ghost small" id="eClose" aria-label="Cerrar">✕</button></header>
     <form id="eForm" novalidate>
       ${fld("eTipo", "Pago / tipo", "", { half: 1, req: 1, html: `<select id="eTipo">${tipos.map(k => `<option value="${k}"${k === rec.tipo ? " selected" : ""}>${esc(TIPOS[k].l)}</option>`).join("")}</select>` })}
       ${tk ? fld("eTicket", "Ticket (no se cambia)", rec.ticket, { half: 1, ro: 1 }) : fld("eFecha", "Fecha", rec.fecha, { half: 1, html: `<input id="eFecha" type="date" value="${esc(rec.fecha)}">` })}
       ${fld("eCliente", gasto ? "Concepto" : "Cliente", rec.cliente, { req: rec.tipo !== "bancodep", dl: gasto ? "" : "dlCli" })}
       ${gasto ? "" : fld("ePlaca", "Placa", rec.placa, { half: 1 })}
-      ${rec.tipo === "despacho" ? fld("eRef", "Ticket del adelanto", rec.ref, { half: 1, req: 1 }) : fld("eMonto", gasto ? "Monto (S/)" : "Venta (S/)", rec.monto === null ? "" : fmt(rec.monto), { half: 1, req: 1, money: 1, hint: "" })}
+      ${fac ? fld("eFacTxt", "Factura (no se cambia: si es otra, anula este ticket)", rec.facturaCodigo, { half: 1, ro: 1 }) + fld("eGuia", "N° guía", rec.guia, { half: 1, req: 1 }) + fld("eLic", "Licencia", rec.licencia, { half: 1, dl: "dlLic" })
+        : rec.tipo === "despacho" ? fld("eRef", "Ticket del adelanto", rec.ref, { half: 1, req: 1 }) : fld("eMonto", gasto ? "Monto (S/)" : "Venta (S/)", rec.monto === null ? "" : fmt(rec.monto), { half: 1, req: 1, money: 1, hint: "" })}
       ${gasto ? "" : `<div class="fld"><label>Productos${rec.tipo === "adelanto" ? ' <span style="font-weight:400">(opcional)</span>' : ' <span style="color:var(--bad)">*</span>'}</label><div id="eItems" class="qitems"></div></div>`}
-      ${(rec.tipo === "deposito" || rec.tipo === "bancodep" || T_TICKET.includes(rec.tipo)) ? fld("eBanco", "Banco (solo si es depósito)", rec.banco, { half: 1, dl: "dlBanco" }) : ""}
+      ${!fac && (rec.tipo === "deposito" || rec.tipo === "bancodep" || T_TICKET.includes(rec.tipo)) ? fld("eBanco", "Banco (solo si es depósito)", rec.banco, { half: 1, dl: "dlBanco" }) : ""}
       ${fld("eObs", "Obs.", rec.obs)}
       <div class="formerr" id="eErr"></div>
       <div class="foot"><button type="button" class="btn" id="eCancel">Cancelar</button><button type="submit" class="btn primary" id="eSave">Guardar cambios</button></div>
@@ -1373,11 +1583,12 @@ function openEdit(rec) {
     const t = $("#eTipo").value;
     const v = Object.assign({}, strip(rec), { tipo: t, fecha: tk ? rec.fecha : (g("#eFecha") || rec.fecha), cliente: g("#eCliente"), placa: g("#ePlaca").toUpperCase() },
       resumenItems(EI ? EI.listos() : []),
-      { monto: rec.tipo === "despacho" ? null : parseMonto(g("#eMonto")), ref: rec.tipo === "despacho" ? g("#eRef") : "", banco: $("#eBanco") ? g("#eBanco") : "", obs: g("#eObs") });
+      { monto: rec.tipo === "despacho" || fac ? null : parseMonto(g("#eMonto")), ref: rec.tipo === "despacho" ? g("#eRef") : "", banco: $("#eBanco") ? g("#eBanco") : "", obs: g("#eObs") });
     if (Number.isNaN(v.monto)) v.monto = null;
+    if (fac) { v.guia = normCodigo(g("#eGuia"), rec.guia || sigGuia()); v.licencia = g("#eLic").toUpperCase(); }
     if (t === "bancodep" && !v.cliente) v.cliente = "Depósito al banco";
     if (!["deposito", "bancodep"].includes(t)) v.banco = "";
-    const err = validarFila(v);
+    const err = validarFila(v) || (fac ? chequeoFactura(v, rec.id) : "");
     if (err) { $("#eErr").textContent = err; return; }
     v.monto = v.monto === null ? null : r2(v.monto);
     v.editadoPor = myId; v.editadoEn = new Date().toISOString();
@@ -1386,7 +1597,8 @@ function openEdit(rec) {
       const mes = mesDe(v.fecha);
       if (mesDe(rec.fecha) !== mes) { await db.doc("m/" + mes + "/mov/" + rec.id).set(v); await db.doc("m/" + mesDe(rec.fecha) + "/mov/" + rec.id).delete(); }
       else await db.doc("m/" + mes + "/mov/" + rec.id).set(v);
-      if (T_VENTA.includes(t)) recordarCliente(v.cliente, v.placa).catch(() => {});
+      if (fac) await ponerGuia(rec.facturaId, guiaDe(Object.assign({ id: rec.id }, v)));
+      if (T_VENTA.includes(t)) recordarCliente(v.cliente, v.placa, v.ruc).catch(() => {});
       close(); toast("Cambios guardados.");
     } catch (er) { $("#eErr").textContent = errMsg(er); $("#eSave").disabled = false; }
   });
@@ -1394,7 +1606,7 @@ function openEdit(rec) {
 function openAnular(rec) {
   const close = modal(`<header><h3>Anular ${esc(rec.ticket || "despacho")}</h3><button class="btn ghost small" id="aClose" aria-label="Cerrar">✕</button></header>
     <form id="aForm" novalidate>
-      <div class="rule">${esc(rec.cliente)} · ${esc(detalleTxt(rec))}${rec.monto ? " · " + soles(rec.monto) : ""}. El ticket no se borra: queda en el historial como ANULADO y deja de sumar.</div>
+      <div class="rule">${esc(rec.cliente)} · ${esc(detalleTxt(rec))}${rec.monto ? " · " + soles(rec.monto) : ""}. El ticket no se borra: queda en el historial como ANULADO y deja de sumar.${rec.tipo === "factura" ? " Su guía " + esc(rec.guia || "") + " se quita de la factura " + esc(rec.facturaCodigo || "") + " y esos m³ vuelven a faltar." : ""}</div>
       <div class="fld"><label for="aMotivo">Motivo de la anulación <span style="color:var(--bad)">*</span></label><textarea id="aMotivo" rows="3" placeholder="Ej.: el cliente del transportista no recibió el material y lo devolvió"></textarea></div>
       <div class="formerr" id="aErr"></div>
       <div class="foot"><button type="button" class="btn" id="aCancel">Cancelar</button><button type="submit" class="btn danger" id="aOk">Anular ticket</button></div>
@@ -1405,7 +1617,11 @@ function openAnular(rec) {
     const m = $("#aMotivo").value.trim();
     if (m.length < 5) { $("#aErr").textContent = "Escribe el motivo de la anulación. Es obligatorio."; return; }
     $("#aOk").disabled = true;
-    try { await db.doc("m/" + mesDe(rec.fecha) + "/mov/" + rec.id).update({ estado: "anulado", motivoAnulacion: m, anuladoPor: myId, anuladoEn: new Date().toISOString() }); close(); toast((rec.ticket || "Despacho") + " anulado."); }
+    try {
+      await db.doc("m/" + mesDe(rec.fecha) + "/mov/" + rec.id).update({ estado: "anulado", motivoAnulacion: m, anuladoPor: myId, anuladoEn: new Date().toISOString() });
+      if (rec.tipo === "factura" && rec.facturaId) await quitarGuia(rec.facturaId, rec.id).catch(er => { if (!(er && er.code === "sin_factura")) throw er; });
+      close(); toast((rec.ticket || "Despacho") + " anulado.");
+    }
     catch (er) { $("#aErr").textContent = errMsg(er); $("#aOk").disabled = false; }
   });
 }
@@ -1442,7 +1658,7 @@ async function cerrarDia() {
   if (live.finMonedas === null && live.finBilletes === null) { msg("Escribe el efectivo contado al cierre (monedas y billetes)."); $("#finMon").focus(); return; }
   const d = { inicioMonedas: r2(live.inicioMonedas || 0), inicioBilletes: r2(live.inicioBilletes || 0), finMonedas: r2(live.finMonedas || 0), finBilletes: r2(live.finBilletes || 0) };
   const c = calcDia(movs, d);
-  const ok = await confirmBox(`<p style="margin:0 0 10px">${esc(capDia(f))} ${esc(fechaTxt(f))} · ${movs.length} movimiento(s). Revisa el resumen:</p>${resumenHTML(c)}`, "Cerrar día y descargar PDF", "Cerrar el día", false);
+  const ok = await confirmBox(`<p style="margin:0 0 10px">${esc(capDia(f))} ${esc(fechaTxt(f))} · ${movs.length} movimiento(s). Revisa el resumen:</p>${resumenHTML(c, r2(sum(facturasDia(f).filter(x => x.estado !== "anulado"), x => x.monto)))}`, "Cerrar día y descargar PDF", "Cerrar el día", false);
   if (!ok) return;
   const dd = diaDoc(f), now = new Date().toISOString();
   try {
@@ -1456,7 +1672,7 @@ async function descargarPdfDia(f, d) {
   if (!window.jspdf) { toast("No cargó la herramienta de PDF. Revisa tu internet y recarga."); return; }
   await ensure(mesDe(f), ["mov"]);
   const c = cfg();
-  const doc = buildPdfDia(window.jspdf.jsPDF, { fecha: f, movs: movsDia(f), dia: d || {}, empresa: S.config.empresa || "", ruc: c.ruc, socios: c.socios });
+  const doc = buildPdfDia(window.jspdf.jsPDF, { fecha: f, movs: movsDia(f), facturas: facturasDia(f), dia: d || {}, empresa: S.config.empresa || "", ruc: c.ruc, socios: c.socios });
   await saveFile("registro-" + f + ".pdf", doc.output("blob"));
 }
 async function saveFile(filename, blob) {
@@ -1471,27 +1687,29 @@ async function saveFile(filename, blob) {
 /* ===== VENTAS: CLIENTES ===== */
 function renderClientes() {
   const q = norm($("#fCli").value);
-  const list = S.clientes.filter(c => !q || norm(c.nombre).includes(q) || norm(c.placa).includes(q)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const list = S.clientes.filter(c => !q || norm(c.nombre).includes(q) || norm(c.placa).includes(q) || String(c.ruc || "").includes(q)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   const ventas = vigentes(data(S.mes, "mov")).filter(m => T_VENTA.includes(m.tipo));
   const t = $("#tCli");
-  if (!list.length) { t.innerHTML = `<tbody><tr><td class="empty wide" colspan="4">${S.clientes.length ? "Ningún cliente coincide con la búsqueda." : "Aún no hay clientes. Agrégalos con “Nuevo cliente” o al registrar su primera venta."}</td></tr></tbody>`; return; }
-  t.innerHTML = `<thead><tr><th>Cliente</th><th>Placa</th><th class="num">Compras en <span>${esc(nombreMes(S.mes, true))}</span></th><th></th></tr></thead><tbody>` +
-    list.map(c => { const vs = ventas.filter(m => norm(m.cliente) === norm(c.nombre)); return `<tr><td data-l="Cliente" class="wide"><b>${esc(c.nombre)}</b></td><td data-l="Placa">${esc(c.placa || "—")}</td>
-      <td class="num" data-l="Compras">${vs.length ? vs.length + " · " + soles(sum(vs, m => m.monto)) : "—"}</td>
+  if (!list.length) { t.innerHTML = `<tbody><tr><td class="empty wide" colspan="5">${S.clientes.length ? "Ningún cliente coincide con la búsqueda." : "Aún no hay clientes. Agrégalos con “Nuevo cliente” o al registrar su primera venta."}</td></tr></tbody>`; return; }
+  t.innerHTML = `<thead><tr><th>Cliente</th><th>Placa</th><th>RUC</th><th class="num">Compras en <span>${esc(nombreMes(S.mes, true))}</span></th><th></th></tr></thead><tbody>` +
+    list.map(c => { const vs = ventas.filter(m => norm(m.cliente) === norm(c.nombre)); return `<tr><td data-l="Cliente" class="wide"><b>${esc(c.nombre)}</b></td><td data-l="Placa">${esc(c.placa || "—")}</td><td data-l="RUC">${esc(c.ruc || "—")}</td>
+      <td class="num" data-l="Compras">${(() => { const fa = facVigentes().filter(f => mesDe(f.fecha) === S.mes && norm(f.razonSocial) === norm(c.nombre)), tot = r2(sum(vs, m => m.monto) + sum(fa, f => f.total)); return vs.length || fa.length ? (vs.length ? vs.length + " ticket(s) · " : "") + soles(tot) : "—"; })()}</td>
       <td class="acts needs-write"><button class="btn small" data-act="cliedit" data-id="${esc(c.id)}">Editar</button><button class="btn small ghost needs-admin" data-act="clidel" data-id="${esc(c.id)}">Borrar</button></td></tr>`; }).join("") + "</tbody>";
 }
 function openCliente(c) {
   const close = modal(`<header><h3>${c ? "Editar cliente" : "Nuevo cliente"}</h3><button class="btn ghost small" id="cClose" aria-label="Cerrar">✕</button></header>
-    <form id="cForm" novalidate>${fld("cNombre", "Nombre del cliente", c ? c.nombre : "", { req: 1 })}${fld("cPlaca", "Placa del volquete", c ? c.placa : "", { half: 1, ph: "ABC-123", hint: "Opcional." })}
+    <form id="cForm" novalidate>${fld("cNombre", "Nombre o razón social", c ? c.nombre : "", { req: 1 })}${fld("cPlaca", "Placa del volquete", c ? c.placa : "", { half: 1, ph: "ABC-123", hint: "Opcional." })}${fld("cRuc", "RUC", c ? c.ruc : "", { half: 1, ph: "20123456789", hint: "Opcional. Con el RUC, la razón social sale sola en las facturas." })}
     <div class="formerr" id="cErr"></div><div class="foot"><button type="button" class="btn" id="cCancel">Cancelar</button><button type="submit" class="btn primary" id="cSave">Guardar</button></div></form>`);
   $("#cClose").onclick = close; $("#cCancel").onclick = close; $("#cNombre").focus();
   $("#cForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const nombre = $("#cNombre").value.trim().replace(/\s+/g, " "), placa = $("#cPlaca").value.trim().toUpperCase();
+    const nombre = $("#cNombre").value.trim().replace(/\s+/g, " "), placa = $("#cPlaca").value.trim().toUpperCase(), ruc = $("#cRuc").value.replace(/\D/g, "");
     if (!nombre) { $("#cErr").textContent = "El nombre del cliente es obligatorio."; return; }
+    if (ruc && ruc.length !== 11) { $("#cErr").textContent = "El RUC tiene 11 dígitos."; return; }
+    if (ruc && S.clientes.some(x => x.ruc === ruc && (!c || x.id !== c.id))) { $("#cErr").textContent = "Ese RUC ya está en otro cliente."; return; }
     if (S.clientes.some(x => norm(x.nombre) === norm(nombre) && (!c || x.id !== c.id))) { $("#cErr").textContent = "Ya existe un cliente con ese nombre."; return; }
     $("#cSave").disabled = true;
-    try { await (c ? db.doc("clientes/" + c.id) : db.collection("clientes").doc()).set(Object.assign(c ? strip(c) : { creadoPor: myId, creadoEn: new Date().toISOString() }, { nombre, placa })); close(); toast("Cliente guardado."); }
+    try { await (c ? db.doc("clientes/" + c.id) : db.collection("clientes").doc()).set(Object.assign(c ? strip(c) : { creadoPor: myId, creadoEn: new Date().toISOString() }, { nombre, placa, ruc })); close(); toast("Cliente guardado."); }
     catch (er) { $("#cErr").textContent = errMsg(er); $("#cSave").disabled = false; }
   });
 }
@@ -1562,13 +1780,14 @@ async function renderResumen() {
   const tok = ++rsTok, meses = ultimos6();
   try { await Promise.all(meses.map(m => ensure(m, ["mov"]))); } catch (_) {}
   if (tok !== rsTok) return;
-  const tot = m => { const c = calcDia(data(m, "mov"), null); return { ing: r2(c.ing + c.dep), gas: r2(c.mesa + c.gcaja), c }; };
+  const facMes = m => r2(sum(facVigentes().filter(f => mesDe(f.fecha) === m), f => f.total));
+  const tot = m => { const c = calcDia(data(m, "mov"), null), fa = facMes(m); return { ing: r2(c.ing + c.dep + fa), gas: r2(c.mesa + c.gcaja), c, fa }; };
   const T = meses.map(tot), cur = T[5], prev = T[4];
   const d = (a, b) => { if (!b) return ["Sin datos del mes anterior", ""]; const p = (a - b) / Math.abs(b) * 100; return [(p >= 0 ? "▲ " : "▼ ") + nf(Math.abs(p), 0) + "% vs " + nombreMes(meses[4], true).toLowerCase(), p >= 0 ? "up" : "down"]; };
   const dI = d(cur.ing, prev.ing);
   const cerr = S.diasMes.filter(x => x.cerradoEn && x.dif !== null && x.dif !== undefined), sdif = r2(sum(cerr, x => x.dif)), nFalt = cerr.filter(x => x.dif < -0.004).length;
-  const vend = vigentes(data(S.mes, "mov")).filter(m => ["venta", "deposito", "despacho"].includes(m.tipo));
-  $("#dashTiles").innerHTML = tile("Ingresos del mes", soles(cur.ing), dI[0], "key", dI[1]) + tile("Efectivo", soles(cur.c.ing), "Ventas y adelantos") + tile("Por depósito", soles(cur.c.dep), "Informativo") +
+  const vend = vigentes(data(S.mes, "mov")).filter(m => ["venta", "deposito", "despacho", "factura"].includes(m.tipo));
+  $("#dashTiles").innerHTML = tile("Ingresos del mes", soles(cur.ing), dI[0], "key", dI[1]) + tile("Efectivo", soles(cur.c.ing), "Ventas y adelantos") + tile("Por depósito", soles(cur.c.dep), "Informativo") + tile("Facturas", soles(cur.fa), facPendientes().length + " por despachar") +
     tile("m³ despachados", nf(sum(vend, m => m.cantidad)), vend.length + " ticket(s)") + tile("Gastos del mes", soles(cur.gas), "Mesa " + soles(cur.c.mesa) + " · caja " + soles(cur.c.gcaja)) + tile("Cuadre del mes", cerr.length ? (Math.abs(sdif) < 0.005 ? "Cuadra" : (sdif > 0 ? "Sobra " : "Falta ") + soles(Math.abs(sdif))) : "—", cerr.length ? cerr.length + " día(s) cerrados · " + nFalt + " con faltante" : "Sin cierres este mes");
   if (!window.Chart) return;
   bar("chMeses", meses.map(m => nombreMes(m, true)), [{ label: "Ingresos", data: T.map(t => t.ing), c: "--series-1" }, { label: "Gastos", data: T.map(t => t.gas), c: "--series-2" }], v => soles(v));
@@ -1579,7 +1798,7 @@ async function renderResumen() {
 
 /* ===== VOLQUETES ===== */
 function utilVolq(mes, vid) {
-  const recs = data(mes, "volquetes").filter(r => r.volquete === vid).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const ids = idsVolq(vid), recs = data(mes, "volquetes").filter(r => ids.includes(r.volquete)).sort((a, b) => a.fecha.localeCompare(b.fecha));
   const h = hoy(), mh = mesDe(h);
   let limite;
   if (mes > mh) limite = 0;
@@ -1612,7 +1831,7 @@ async function renderVolquetes() {
   const meses = ultimos6();
   try { await Promise.all(meses.map(m => ensure(m, ["volquetes"]))); } catch (_) {}
   if (tok !== vqTok || !window.Chart) return;
-  const series = VOLQUETES.map((v, i) => ({ label: v.nombre, data: meses.map(m => { const u = utilVolq(m, v.id).util; return u === null ? null : Math.round(u * 10) / 10; }), c: ["--series-1", "--series-2", "--series-3"][i] }));
+  const series = VOLQUETES.map((v, i) => ({ label: v.nombre, data: meses.map(m => { const u = utilVolq(m, v.id).util; return u === null ? null : Math.round(u * 10) / 10; }), c: "--series-" + (i % 6 + 1) }));
   $("#volqLegend").innerHTML = series.map(s => `<span><i style="background:var(${s.c})"></i>${esc(s.label)} · prom. ${pctTxt(promedio(s.data))}</span>`).join("");
   bar("chVolqFlota", meses.map(m => nombreMes(m, true)), series, v => nf(v, 0) + " %", { pct: true });
 }
@@ -1646,7 +1865,7 @@ async function renderVolquete() {
       const hrs = num(r.horometro) > 0 && prevH ? r.horometro - prevH.horometro : null;
       const pill = meta === 0 ? `<span class="pill">Domingo</span>` : num(r.viajes) >= meta ? `<span class="pill good">Cumplida (${meta})</span>` : `<span class="pill ${num(r.viajes) ? "warn" : "bad"}">${nf(r.viajes, 0)} de ${meta}</span>`;
       return `<tr><td data-l="Fecha">${fechaTxt(r.fecha)}<span class="by">${DIAS[dow(r.fecha)]}</span></td><td class="num" data-l="Viajes"><b>${nf(r.viajes, 0)}</b></td><td data-l="Meta">${pill}</td>
-        <td class="num" data-l="Diésel (gal)">${r.galones != null ? nf(r.galones) : "—"}</td><td class="num" data-l="Horómetro">${r.horometro != null ? nf(r.horometro, 1) : "—"}</td>
+        <td class="num" data-l="Diésel (gal)">${r.galones != null ? nf(r.galones) : "—"}${r.tanque && r.galones ? `<span class="by">${esc(tanqueNombre(r.tanque))}</span>` : ""}</td><td class="num" data-l="Horómetro">${r.horometro != null ? nf(r.horometro, 1) : "—"}</td>
         <td class="num" data-l="Horas">${hrs !== null ? nf(hrs, 1) : "—"}</td><td data-l="Nota" class="wide">${esc(r.nota || "")}${byTag(r)}</td>
         <td class="acts needs-write"><button class="btn small" data-act="vqedit" data-fecha="${esc(r.fecha)}">Editar</button></td></tr>`;
     }).join("") + "</tbody>";
@@ -1657,15 +1876,25 @@ async function renderVolquete() {
   $("#vqHistNota").textContent = "Últimos 6 meses. Promedio: " + pctTxt(promedio(hist)) + ".";
   bar("chVolq", meses.map(m => nombreMes(m, true)), [{ label: nombre, data: hist, c: "--series-1" }], v => nf(v, 0) + " %", { pct: true });
 }
-function registroDe(fecha, vid) { return data(mesDe(fecha), "volquetes").find(r => r.volquete === vid && r.fecha === fecha); }
+function registroDe(fecha, vid) { const ids = idsVolq(vid); return data(mesDe(fecha), "volquetes").find(r => ids.includes(r.volquete) && r.fecha === fecha); }
+function llenarTanquesVq() {
+  const sel = $("#vqTanque"), h = TANQUES.map(t => `<option value="${t.id}">${esc(tanqueNombre(t.id))} · ${nf(saldoTanque(t.id))} gal</option>`).join("");
+  if (sel.dataset.h !== h) { const c = sel.value; sel.innerHTML = h; sel.dataset.h = h; if (c) sel.value = c; }
+}
+function ultimoTanque(vid) {
+  const ids = idsVolq(vid), r = Object.values(S.cache).flatMap(m => m.volquetes || []).filter(x => ids.includes(x.volquete) && x.tanque).sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+  return r ? r.tanque : TANQUES[0].id;
+}
 async function cargarRegistro(reset) {
   const fecha = $("#vqFecha").value, vid = S.vq; if (!fecha) return;
+  llenarTanquesVq();
   const meta = META_DIA[dow(fecha)];
   if (!has(mesDe(fecha), "volquetes")) { try { await ensure(mesDe(fecha), ["volquetes"]); } catch (_) {} }
   const r = registroDe(fecha, vid), form = $("#vqForm");
   if (reset || form.dataset.loaded !== fecha + "|" + vid) {
     $("#vqViajes").value = r ? r.viajes : meta;
     $("#vqGalones").value = r && r.galones != null ? r.galones : "";
+    $("#vqTanque").value = (r && r.tanque) || ultimoTanque(vid);
     $("#vqHoro").value = r && r.horometro != null ? r.horometro : "";
     $("#vqNota").value = r ? (r.nota || "") : "";
     form.dataset.loaded = fecha + "|" + vid; $("#vqErr").textContent = "";
@@ -1674,7 +1903,7 @@ async function cargarRegistro(reset) {
   $("#vqGuardar").textContent = r ? "Guardar cambios" : "Guardar";
   $("#vqBorrar").hidden = !r;
   $("#vqRegla").textContent = `Meta para el ${DIAS[dow(fecha)]} ${fechaTxt(fecha)}: ${meta === 0 ? "sin viajes (domingo)" : meta + " viaje" + (meta > 1 ? "s" : "") + " de over"}.`;
-  const prev = data(mesDe(fecha), "volquetes").concat(data(addMes(mesDe(fecha), -1), "volquetes")).filter(x => x.volquete === vid && x.fecha < fecha && num(x.horometro) > 0).sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+  const prev = data(mesDe(fecha), "volquetes").concat(data(addMes(mesDe(fecha), -1), "volquetes")).filter(x => idsVolq(vid).includes(x.volquete) && x.fecha < fecha && num(x.horometro) > 0).sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
   $("#vqHoroHint").textContent = prev ? `Anterior: ${nf(prev.horometro, 1)} (${fechaTxt(prev.fecha)})` : "";
 }
 async function pdfVolquetes(mes) {
@@ -1694,6 +1923,634 @@ async function pdfVolquetes(mes) {
   });
   pdfEncabezados(doc, "VOLQUETES: UTILIZACIÓN DEL MES", nombreMesL(mes), "Meta: 2 viajes de over de lunes a viernes, 1 el sábado, 0 el domingo", nombreMesL(mes));
   await saveFile("volquetes-" + mes + ".pdf", doc.output("blob"));
+}
+
+/* ===== DIÉSEL ===== */
+const saldoTanque = id => r2(num((S.tanques[id] || {}).saldo));
+const tanqueNombre = id => (S.tanques[id] && S.tanques[id].nombre) || (TANQUES.find(t => t.id === id) || { nombre: id }).nombre;
+const totalDiesel = () => r2(TANQUES.reduce((a, t) => a + saldoTanque(t.id), 0));
+const signed = x => (x > 0.004 ? "+" : x < -0.004 ? "−" : "") + nf(Math.abs(x));
+const dieselMes = mes => data(mes, "diesel").slice().sort((a, b) => (a.fecha || "").localeCompare(b.fecha || "") || num(a.orden) - num(b.orden));
+const eqNombre = d => { const e = d.equipoId && S.equipos.find(x => x.id === d.equipoId); return e ? e.nombre : (d.equipo || "Sin equipo"); };
+const mesesDespues = mes => { const out = [], tope = addMes(mesDe(hoy()), 2); for (let m = addMes(mes, 1); m < tope; m = addMes(m, 1)) out.push(m); return out; };
+/* Saldo corrido: parte del saldo actual de cada tanque y retrocede movimiento por movimiento. */
+function corridaDiesel(mes) {
+  const fin = {}; TANQUES.forEach(t => { fin[t.id] = saldoTanque(t.id); });
+  mesesDespues(mes).forEach(m => data(m, "diesel").forEach(d => { if (d.tanque in fin) fin[d.tanque] = r2(fin[d.tanque] - num(d.delta)); }));
+  const movs = dieselMes(mes), despues = {}, s = Object.assign({}, fin);
+  for (let i = movs.length - 1; i >= 0; i--) { const d = movs[i]; despues[d.id] = s[d.tanque]; if (d.tanque in s) s[d.tanque] = r2(s[d.tanque] - num(d.delta)); }
+  return { movs, despues, inicio: s, fin };
+}
+function consumoPorEquipo(movs) {
+  const g = {};
+  movs.filter(d => d.tipo === "consumo").forEach(d => {
+    const k = d.equipoId || "n:" + norm(d.equipo);
+    g[k] = g[k] || { nombre: eqNombre(d), tipo: ((d.equipoId && S.equipos.find(x => x.id === d.equipoId)) || {}).tipo || "", n: 0, gal: 0 };
+    g[k].n++; g[k].gal = r2(g[k].gal + num(d.galones));
+  });
+  return Object.values(g).sort((a, b) => b.gal - a.gal);
+}
+async function aplicarDiesel(ops, ajustes) {
+  const b = db.batch(), inc = firebase.firestore.FieldValue.increment, now = new Date().toISOString();
+  ops.forEach(o => { if (o.data) b.set(o.ref, o.data); else b.delete(o.ref); });
+  Object.entries(ajustes).forEach(([id, d]) => { if (d) b.set(db.doc("tanques/" + id), { nombre: tanqueNombre(id), saldo: inc(d), actualizadoEn: now }, { merge: true }); });
+  let listo = false;
+  const p = b.commit().then(() => { listo = true; }, e => { if (listo) toast(errMsg(e)); listo = true; throw e; });
+  await Promise.race([p, sleep(1500).then(() => { if (!listo) { listo = true; p.catch(() => {}); } })]);
+}
+async function recordarEquipo(nombre, preguntar = true) {
+  const n = norm(nombre); if (!n) return "";
+  const e = S.equipos.find(x => norm(x.nombre) === n); if (e) return e.id;
+  if (!preguntar) throw { code: "sin_equipo" };
+  const info = await pedirEquipoNuevo(nombre.trim());
+  if (!info) throw { code: "cancelado" };
+  const ref = db.collection("equipos").doc();
+  await ref.set({ nombre: nombre.trim().replace(/\s+/g, " "), tipo: info.tipo, modelo: info.modelo || "", placa: "", activo: true, creadoPor: myId, creadoEn: new Date().toISOString() });
+  return ref.id;
+}
+
+let dTok = 0;
+async function renderDiesel() {
+  const tok = ++dTok, sub = S.view === "diesel-equipos" ? "deq" : "dmov";
+  pintarDieselTiles();
+  renderDieselForm();
+  renderDieselTabla();
+  try { await Promise.all(mesesDespues(S.mes).map(m => ensure(m, ["diesel"]))); } catch (_) {}
+  if (tok !== dTok) return;
+  renderDieselTabla();
+}
+function pintarDieselTiles() {
+  const movs = data(S.mes, "diesel"), mc = sum(movs.filter(d => d.tipo === "consumo"), d => d.galones), mesC = nombreMes(S.mes, true);
+  $("#dTiles").innerHTML = TANQUES.map(t => {
+    const ms = movs.filter(d => d.tanque === t.id), sv = saldoTanque(t.id);
+    return tile(tanqueNombre(t.id) + " · saldo", nf(sv) + " gal", `${mesC}: +${nf(sum(ms.filter(d => d.tipo === "compra"), d => d.galones))} compra · −${nf(sum(ms.filter(d => d.tipo === "consumo"), d => d.galones))} consumo`, "", sv < 0 ? "down" : "");
+  }).join("") + tile("Total de diésel", nf(totalDiesel()) + " gal", "Consumo de " + mesC.toLowerCase() + ": " + nf(mc) + " gal", "key");
+}
+function renderDieselForm() {
+  const sel = $("#dTanque");
+  const html = TANQUES.map(t => `<option value="${t.id}">${esc(tanqueNombre(t.id))} · ${nf(saldoTanque(t.id))} gal</option>`).join("");
+  if (sel.dataset.h !== html) { const cur = sel.value; sel.innerHTML = html; sel.dataset.h = html; if (cur) sel.value = cur; }
+  const f = $("#dFecha");
+  if (!f.value || (mesDe(f.value) !== S.mes && document.activeElement !== f)) f.value = mesDe(hoy()) === S.mes ? hoy() : S.mes + "-01";
+  dieselTipo();
+}
+function dieselTipo() {
+  const t = $("#dTipo").value;
+  $("#dEqBox").hidden = t !== "consumo"; $("#dProvBox").hidden = t !== "compra"; $("#dPrecioBox").hidden = t !== "compra";
+  $("#dGalLbl").innerHTML = (t === "ajuste" ? "Saldo medido (gal)" : "Galones") + ' <span class="req">*</span>';
+  dieselHint();
+}
+function dieselHint() {
+  const t = $("#dTipo").value, tq = $("#dTanque").value, g = parseMonto($("#dGal").value), s = saldoTanque(tq), h = $("#dHint");
+  let msg = "", warn = false;
+  if (!tq) { h.textContent = ""; return; }
+  if (g !== null && !Number.isNaN(g)) {
+    if (t === "compra") {
+      msg = `${esc(tanqueNombre(tq))}: ${nf(s)} + ${nf(g)} = <b>${nf(r2(s + g))} gal</b>`;
+      const p = parseMonto($("#dPrecio").value); if (p > 0) msg += ` · Total de la compra: <b>${soles(r2(g * p))}</b>`;
+    } else if (t === "consumo") {
+      const q = r2(s - g); msg = `${esc(tanqueNombre(tq))}: ${nf(s)} − ${nf(g)} = <b>${nf(q)} gal</b>`;
+      if (q < 0) { msg += ". El tanque quedaría en negativo: revisa si falta registrar una compra."; warn = true; }
+    } else { const d = r2(g - s); msg = `Saldo en la app: ${nf(s)} gal · medido: ${nf(g)} gal → ajuste de <b>${signed(d)} gal</b>`; }
+  } else if (t === "ajuste") msg = `Saldo en la app de ${esc(tanqueNombre(tq))}: <b>${nf(s)} gal</b>. Escribe lo que midieron.`;
+  h.innerHTML = msg; h.className = "qhint" + (warn ? " warn" : "");
+}
+async function dieselSubmit(e) {
+  e.preventDefault();
+  if (EQC && EQC.abierto()) return;
+  if (!db) { $("#dErr").textContent = "Todavía no hay conexión con la base de datos."; return; }
+  const err = m => { $("#dErr").textContent = m; };
+  const t = $("#dTipo").value, tq = $("#dTanque").value, fecha = $("#dFecha").value, g = parseMonto($("#dGal").value);
+  const equipo = $("#dEquipo").value.trim().replace(/\s+/g, " "), precio = t === "compra" ? parseMonto($("#dPrecio").value) : null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return err("Elige la fecha.");
+  if (!TANQUES.some(x => x.id === tq)) return err("Elige el tanque.");
+  if (g === null || Number.isNaN(g) || g < 0 || (t !== "ajuste" && g === 0)) return err(t === "ajuste" ? "Escribe el saldo que midieron, en galones." : "Escribe los galones (mayor que cero).");
+  if (t === "consumo" && !equipo) return err("Elige o escribe el equipo.");
+  const eqv = S.equipos.find(x => norm(x.nombre) === norm(equipo));
+  if (t === "consumo" && eqv && eqv.tipo === "Volquete") return err("El diésel de " + eqv.nombre + " se registra en Volquetes, junto con sus viajes del día. Así no se anota dos veces.");
+  if (Number.isNaN(precio)) return err("El precio por galón debe ser un número (ej.: 15.50).");
+  const delta = t === "compra" ? r2(g) : t === "consumo" ? -r2(g) : r2(g - saldoTanque(tq));
+  $("#dSave").disabled = true; err("");
+  try {
+    const equipoId = t === "consumo" ? await recordarEquipo(equipo) : "";
+    const body = { fecha, tipo: t, tanque: tq, galones: t === "ajuste" ? Math.abs(delta) : r2(g), delta, medido: t === "ajuste" ? r2(g) : null,
+      equipo: t === "consumo" ? equipo : "", equipoId, proveedor: t === "compra" ? $("#dProv").value.trim() : "", precioGalon: precio > 0 ? r2(precio) : null,
+      total: precio > 0 ? r2(g * precio) : null, obs: $("#dObs").value.trim(), orden: Date.now(), creadoPor: myId, creadoEn: new Date().toISOString() };
+    await aplicarDiesel([{ ref: db.collection("m/" + mesDe(fecha) + "/diesel").doc(), data: body }], { [tq]: delta });
+    delete S.fetched[mesDe(fecha) + "|diesel"];
+    ["#dGal", "#dEquipo", "#dObs", "#dPrecio"].forEach(id => { $(id).value = ""; }); if (EQC) EQC.cerrar();
+    toast(t === "compra" ? "Compra registrada." : t === "consumo" ? "Consumo registrado." : "Ajuste registrado.");
+    dieselHint(); $(t === "consumo" ? "#dEquipo" : "#dGal").focus();
+    if (mesDe(fecha) !== S.mes) renderView();
+  } catch (er) { err(errMsg(er)); }
+  finally { $("#dSave").disabled = false; }
+}
+function renderDieselTabla() {
+  const { movs, despues, inicio, fin } = corridaDiesel(S.mes), f = S.dFiltro;
+  $("#dFiltro").innerHTML = [["todos", "Todos"]].concat(TANQUES.map(t => [t.id, tanqueNombre(t.id)])).map(([k, l]) => `<button type="button" data-dfil="${k}" aria-selected="${k === f}">${esc(l)}</button>`).join("");
+  const eqKey = d => d.equipoId || "n:" + norm(d.equipo);
+  const eqOpts = [...new Map(movs.filter(d => d.tipo === "consumo").map(d => [eqKey(d), eqNombre(d)])).entries()].sort((a, b) => a[1].localeCompare(b[1], "es"));
+  if (S.dFEq !== "todos" && !eqOpts.some(o => o[0] === S.dFEq)) S.dFEq = "todos";
+  const selEq = $("#dFEq"), hEq = `<option value="todos">Todos los equipos</option>` + eqOpts.map(([k, n]) => `<option value="${esc(k)}">${esc(n)}</option>`).join("");
+  if (selEq.dataset.h !== hEq) { selEq.innerHTML = hEq; selEq.dataset.h = hEq; }
+  selEq.value = S.dFEq; $("#dFMov").value = S.dFMov;
+  const rows = movs.filter(d => (f === "todos" || d.tanque === f) && (S.dFMov === "todos" || d.tipo === S.dFMov) && (S.dFEq === "todos" || (d.tipo === "consumo" && eqKey(d) === S.dFEq))), t = $("#tDiesel");
+  const iniTxt = f === "todos" ? TANQUES.map(x => `${esc(tanqueNombre(x.id))}: <b>${nf(inicio[x.id])}</b>`).join(" · ") : `<b>${nf(inicio[f])} gal</b>`;
+  if (!rows.length) t.innerHTML = `<tbody><tr><td class="empty wide" colspan="8">Aún no hay movimientos de diésel en ${esc(nombreMes(S.mes))}${f !== "todos" ? " para " + esc(tanqueNombre(f)) : ""}. Saldo al inicio del mes: ${iniTxt}.</td></tr></tbody>`;
+  else {
+    const tc = sum(rows.filter(d => d.tipo === "compra"), d => d.galones), tco = sum(rows.filter(d => d.tipo === "consumo"), d => d.galones);
+    const finF = f === "todos" ? r2(TANQUES.reduce((a, x) => a + num(fin[x.id]), 0)) : fin[f];
+    t.innerHTML = `<thead><tr><th>Fecha</th><th>Tanque</th><th class="num">Compra (gal)</th><th class="num">Consumo (gal)</th><th class="num">Saldo (gal)</th><th>Equipo / proveedor</th><th>Obs.</th><th></th></tr></thead><tbody>
+      <tr><td class="wide muted" colspan="8" data-l="">Saldo al inicio del mes: ${iniTxt}</td></tr>` +
+      rows.map(d => {
+        const sd = despues[d.id];
+        const quien = d.tipo === "consumo" ? `<b>${esc(eqNombre(d))}</b>${d.origen === "volquete" ? '<span class="by">desde Volquetes</span>' : ""}` : d.tipo === "compra" ? `Compra${d.proveedor ? " · " + esc(d.proveedor) : ""}${d.total ? `<span class="by">${soles(d.total)} (${soles(d.precioGalon)}/gal)</span>` : ""}` : `<span class="pill warn">Ajuste ${signed(d.delta)} gal</span><span class="by">Medido: ${nf(d.medido)} gal</span>`;
+        return `<tr><td data-l="Fecha">${fechaTxt(d.fecha)}<span class="by">${DIAS[dow(d.fecha)]}</span></td><td data-l="Tanque">${esc(tanqueNombre(d.tanque))}</td>
+          <td class="num" data-l="Compra (gal)">${d.tipo === "compra" ? nf(d.galones) : ""}</td><td class="num" data-l="Consumo (gal)">${d.tipo === "consumo" ? nf(d.galones) : ""}</td>
+          <td class="num" data-l="Saldo (gal)"><b${sd < 0 ? ' style="color:var(--bad)"' : ""}>${sd === undefined ? "—" : nf(sd)}</b></td>
+          <td data-l="Equipo / proveedor" class="wide">${quien}${byTag(d)}</td><td data-l="Obs.">${esc(d.obs || "")}</td>
+          <td class="acts">${d.origen === "volquete" ? `<button class="btn small" data-act="dvq" data-id="${esc(d.id)}">Ver en Volquetes</button>` : `<span class="needs-write"><button class="btn small" data-act="dedit" data-id="${esc(d.id)}">Editar</button><button class="btn small ghost" data-act="ddel" data-id="${esc(d.id)}">Borrar</button></span>`}</td></tr>`;
+      }).join("") +
+      `</tbody><tfoot><tr><td>TOTAL</td><td></td><td class="num" data-l="Compras">${nf(tc)}</td><td class="num" data-l="Consumo">${nf(tco)}</td><td class="num" data-l="Saldo final">${nf(finF)}</td><td></td><td></td><td></td></tr></tfoot>`;
+  }
+  const ce = consumoPorEquipo(movs), tot = sum(ce, x => x.gal), te = $("#tDEq");
+  te.innerHTML = !ce.length ? `<tbody><tr><td class="empty wide" colspan="5">Sin consumos este mes.</td></tr></tbody>` :
+    `<thead><tr><th>Equipo</th><th>Tipo</th><th class="num">Cargas</th><th class="num">Galones</th><th class="num">% del consumo</th></tr></thead><tbody>` +
+    ce.map(x => `<tr><td data-l="Equipo" class="wide"><b>${esc(x.nombre)}</b></td><td data-l="Tipo">${esc(x.tipo || "—")}</td><td class="num" data-l="Cargas">${x.n}</td><td class="num" data-l="Galones">${nf(x.gal)}</td><td class="num" data-l="% del consumo">${tot ? nf(x.gal / tot * 100, 0) + " %" : "—"}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>TOTAL</td><td></td><td class="num" data-l="Cargas">${sum(ce, x => x.n)}</td><td class="num" data-l="Galones">${nf(tot)}</td><td></td></tr></tfoot>`;
+  const pt = {}; ce.forEach(x => { const k = x.tipo || "Sin tipo"; pt[k] = r2((pt[k] || 0) + x.gal); });
+  $("#dPorTipo").innerHTML = Object.entries(pt).sort((a, b) => b[1] - a[1]).map(([k, g]) => `<span>${esc(k)}: <b>${nf(g)} gal</b></span>`).join("");
+  resolveNames();
+}
+function openDieselEdit(rec) {
+  if (!db) return;
+  const nom = rec.tipo === "compra" ? "compra" : rec.tipo === "consumo" ? "consumo" : "ajuste";
+  const close = modal(`<header><h3>Editar ${nom}</h3><button class="btn ghost small" id="xClose" aria-label="Cerrar">✕</button></header>
+    <form id="xForm" novalidate>
+      ${fld("xFecha", "Fecha", rec.fecha, { half: 1, html: `<input id="xFecha" type="date" value="${esc(rec.fecha)}">` })}
+      ${fld("xTanque", "Tanque", "", { half: 1, req: 1, html: `<select id="xTanque">${TANQUES.map(t => `<option value="${t.id}"${t.id === rec.tanque ? " selected" : ""}>${esc(tanqueNombre(t.id))}</option>`).join("")}</select>` })}
+      ${fld("xGal", rec.tipo === "ajuste" ? "Saldo medido (gal)" : "Galones", rec.tipo === "ajuste" ? rec.medido : rec.galones, { half: 1, req: 1, money: 1 })}
+      ${rec.tipo === "consumo" ? fld("xEq", "Equipo", eqNombre(rec), { half: 1, req: 1, dl: "dlEq" }) : ""}
+      ${rec.tipo === "compra" ? fld("xProv", "Proveedor / grifo", rec.proveedor, { half: 1, dl: "dlProv" }) + fld("xPrecio", "S/ por galón", rec.precioGalon ?? "", { half: 1, money: 1 }) : ""}
+      ${fld("xObs", "Obs.", rec.obs)}
+      <div class="formerr" id="xErr"></div>
+      <div class="foot"><button type="button" class="btn" id="xCancel">Cancelar</button><button type="submit" class="btn primary" id="xSave">Guardar cambios</button></div>
+    </form>`);
+  $("#xClose").onclick = close; $("#xCancel").onclick = close;
+  $("#xForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = m => { $("#xErr").textContent = m; };
+    const fecha = $("#xFecha").value, tq = $("#xTanque").value, g = parseMonto($("#xGal").value);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return err("Elige la fecha.");
+    if (g === null || Number.isNaN(g) || g < 0 || (rec.tipo !== "ajuste" && g === 0)) return err("Revisa los galones.");
+    const equipo = $("#xEq") ? $("#xEq").value.trim().replace(/\s+/g, " ") : "";
+    if (rec.tipo === "consumo" && !equipo) return err("Escribe el equipo.");
+    const eqv = S.equipos.find(x => norm(x.nombre) === norm(equipo));
+    if (rec.tipo === "consumo" && eqv && eqv.tipo === "Volquete") return err("El diésel de los volquetes se registra en Volquetes.");
+    const precio = $("#xPrecio") ? parseMonto($("#xPrecio").value) : null;
+    if (Number.isNaN(precio)) return err("El precio por galón debe ser un número.");
+    const base = saldoTanque(tq) - (tq === rec.tanque ? num(rec.delta) : 0);
+    const delta = rec.tipo === "compra" ? r2(g) : rec.tipo === "consumo" ? -r2(g) : r2(g - base);
+    $("#xSave").disabled = true;
+    try {
+      const equipoId = rec.tipo === "consumo" ? await recordarEquipo(equipo, false) : "";
+      const v = Object.assign({}, strip(rec), { fecha, tanque: tq, galones: rec.tipo === "ajuste" ? Math.abs(delta) : r2(g), delta, medido: rec.tipo === "ajuste" ? r2(g) : null,
+        equipo: rec.tipo === "consumo" ? equipo : "", equipoId, proveedor: $("#xProv") ? $("#xProv").value.trim() : "", precioGalon: precio > 0 ? r2(precio) : null,
+        total: precio > 0 ? r2(g * precio) : null, obs: $("#xObs").value.trim(), editadoPor: myId, editadoEn: new Date().toISOString() });
+      const oldRef = db.doc("m/" + mesDe(rec.fecha) + "/diesel/" + rec.id);
+      const ops = mesDe(fecha) === mesDe(rec.fecha) ? [{ ref: oldRef, data: v }] : [{ ref: db.doc("m/" + mesDe(fecha) + "/diesel/" + rec.id), data: v }, { ref: oldRef, data: null }];
+      const aj = {}; aj[rec.tanque] = r2(-num(rec.delta)); aj[tq] = r2((aj[tq] || 0) + delta);
+      await aplicarDiesel(ops, aj);
+      delete S.fetched[mesDe(fecha) + "|diesel"]; delete S.fetched[mesDe(rec.fecha) + "|diesel"];
+      close(); toast("Cambios guardados.");
+    } catch (er) { err(errMsg(er)); $("#xSave").disabled = false; }
+  });
+}
+async function borrarDiesel(rec) {
+  const txt = rec.tipo === "consumo" ? `el consumo de ${nf(rec.galones)} gal de ${esc(eqNombre(rec))}` : rec.tipo === "compra" ? `la compra de ${nf(rec.galones)} gal` : "el ajuste";
+  if (!await confirmBox(`Se borrará ${txt} del ${esc(fechaTxt(rec.fecha))} y el saldo de ${esc(tanqueNombre(rec.tanque))} se corrige solo.`, "Borrar")) return;
+  try { await aplicarDiesel([{ ref: db.doc("m/" + mesDe(rec.fecha) + "/diesel/" + rec.id), data: null }], { [rec.tanque]: r2(-num(rec.delta)) }); delete S.fetched[mesDe(rec.fecha) + "|diesel"]; toast("Borrado."); }
+  catch (er) { toast(errMsg(er)); }
+}
+/* equipos: una sola lista para toda la app */
+const tipoDe = id => ((S.equipos.find(x => x.id === id) || {}).tipo || "");
+function onEquipos(s) {
+  S.equipos = s.docs.map(x => Object.assign({ id: x.id }, x.data())).filter(e => e.nombre);
+  S.equiposCargados = true;
+  VOLQUETES = listaVolquetes();
+  fillDatalists(); renderAll();
+  asegurarVolquetesBase();
+}
+function listaVolquetes() {
+  if (!S.equiposCargados) return VOLQ_BASE.map(v => Object.assign({ ids: [v.id] }, v));
+  const orden = id => { const i = VOLQ_BASE.findIndex(v => v.id === id); return i < 0 ? 99 : i; };
+  return S.equipos.filter(e => e.tipo === "Volquete" && e.activo !== false)
+    .sort((a, b) => orden(a.alias || a.id) - orden(b.alias || b.id) || a.nombre.localeCompare(b.nombre, "es"))
+    .map(e => ({ id: e.id, nombre: e.nombre, ids: [e.id, e.alias].filter(Boolean) }));
+}
+const idsVolq = vid => (VOLQUETES.find(v => v.id === vid) || { ids: [vid] }).ids;
+/* Los 3 volquetes de siempre entran solos a la lista, con los mismos registros que ya tienen. */
+let baseRevisada = false;
+async function asegurarVolquetesBase() {
+  if (baseRevisada || !db || !writable) return;
+  baseRevisada = true;
+  try {
+    for (const v of VOLQ_BASE) {
+      if (S.equipos.some(e => e.id === v.id || e.alias === v.id)) continue;
+      const mismo = S.equipos.find(e => norm(e.nombre) === norm(v.nombre));
+      if (mismo) await db.doc("equipos/" + mismo.id).update({ alias: v.id, tipo: mismo.tipo || "Volquete" });
+      else await db.doc("equipos/" + v.id).set({ nombre: v.nombre, tipo: "Volquete", modelo: "", placa: "", activo: true, creadoPor: myId, creadoEn: new Date().toISOString() });
+    }
+  } catch (_) { baseRevisada = false; }
+}
+function renderEquipos() {
+  const q = norm($("#fEq").value), f = S.eqFiltro;
+  const cons = {}; data(S.mes, "diesel").filter(d => d.tipo === "consumo").forEach(d => { const k = d.equipoId || "n:" + norm(d.equipo); cons[k] = r2((cons[k] || 0) + num(d.galones)); });
+  const tipos = TIPOS_EQ.filter(t => S.equipos.some(e => e.tipo === t));
+  if (S.equipos.some(e => !e.tipo)) tipos.push("");
+  $("#eqFiltro").innerHTML = [["todos", "Todos"]].concat(tipos.map(t => [t, t || "Sin tipo"])).map(([k, l]) => `<button type="button" data-eqfil="${esc(k)}" aria-selected="${k === f}">${esc(l)} <span class="muted">${k === "todos" ? S.equipos.length : S.equipos.filter(e => (e.tipo || "") === k).length}</span></button>`).join("");
+  const list = S.equipos.filter(e => (f === "todos" || (e.tipo || "") === f) && (!q || [e.nombre, e.tipo, e.modelo, e.placa].some(x => norm(x).includes(q))))
+    .sort((a, b) => (a.activo === false) - (b.activo === false) || (a.tipo || "~").localeCompare(b.tipo || "~", "es") || a.nombre.localeCompare(b.nombre, "es"));
+  const t = $("#tEq");
+  if (!list.length) { t.innerHTML = `<tbody><tr><td class="empty wide" colspan="6">${S.equipos.length ? "Ningún equipo coincide." : "Aún no hay equipos. Agrégalos con “Nuevo equipo”."}</td></tr></tbody>`; return; }
+  t.innerHTML = `<thead><tr><th>Equipo</th><th>Tipo</th><th>Placa / serie</th><th class="num">Diésel en ${esc(nombreMes(S.mes, true))}</th><th>Estado</th><th></th></tr></thead><tbody>` +
+    list.map(e => {
+      const g = cons[e.id] || cons["n:" + norm(e.nombre)] || 0, baja = e.activo === false;
+      return `<tr class="${baja ? "anul" : ""}"><td data-l="Equipo" class="wide"><b>${esc(e.nombre)}</b>${e.modelo ? `<span class="by">Modelo ${esc(e.modelo)}</span>` : ""}</td>
+        <td data-l="Tipo">${e.tipo ? esc(e.tipo) : '<span class="pill warn">Falta el tipo</span>'}</td><td data-l="Placa / serie">${esc(e.placa || "—")}</td>
+        <td class="num" data-l="Diésel">${g ? nf(g) + " gal" : "—"}</td><td data-l="Estado">${baja ? '<span class="pill">De baja</span>' : '<span class="pill good">Activo</span>'}</td>
+        <td class="acts"><span class="needs-write"><button class="btn small" data-act="eqedit" data-id="${esc(e.id)}">Editar</button><button class="btn small ghost" data-act="eqbaja" data-id="${esc(e.id)}">${baja ? "Reactivar" : "Dar de baja"}</button></span><button class="btn small ghost needs-admin" data-act="eqdel" data-id="${esc(e.id)}">Borrar</button></td></tr>`;
+    }).join("") + "</tbody>";
+}
+function openEquipo(eq) {
+  if (!db) return;
+  const close = modal(`<header><h3>${eq ? "Editar equipo" : "Nuevo equipo"}</h3><button class="btn ghost small" id="qeClose" aria-label="Cerrar">✕</button></header>
+    <form id="qeForm" novalidate>${fld("qeNombre", "Nombre (como lo llaman)", eq ? eq.nombre : "", { req: 1, ph: "Volvo 500, Excavadora grande" })}
+    ${fld("qeTipo", "Tipo", "", { half: 1, req: 1, html: `<select id="qeTipo"><option value="">Elige el tipo…</option>${TIPOS_EQ.map(x => `<option${eq && eq.tipo === x ? " selected" : ""}>${esc(x)}</option>`).join("")}</select>` })}
+    ${fld("qeModelo", "Modelo / marca", eq ? eq.modelo : "", { half: 1, ph: "XY470, 490M4U" })}
+    ${fld("qePlaca", "Placa o serie", eq ? eq.placa : "", { half: 1, ph: "Opcional" })}
+    <div class="formerr" id="qeErr"></div><div class="foot"><button type="button" class="btn" id="qeCancel">Cancelar</button><button type="submit" class="btn primary" id="qeSave">Guardar</button></div></form>`);
+  $("#qeClose").onclick = close; $("#qeCancel").onclick = close; $("#qeNombre").focus();
+  $("#qeForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const nombre = $("#qeNombre").value.trim().replace(/\s+/g, " "), tipo = $("#qeTipo").value, modelo = $("#qeModelo").value.trim(), placa = $("#qePlaca").value.trim().toUpperCase();
+    if (!nombre) { $("#qeErr").textContent = "El nombre del equipo es obligatorio."; return; }
+    if (!tipo) { $("#qeErr").textContent = "Elige el tipo de equipo."; return; }
+    if (S.equipos.some(x => norm(x.nombre) === norm(nombre) && (!eq || x.id !== eq.id))) { $("#qeErr").textContent = "Ya existe un equipo con ese nombre."; return; }
+    $("#qeSave").disabled = true;
+    try {
+      await (eq ? db.doc("equipos/" + eq.id) : db.collection("equipos").doc()).set(Object.assign(eq ? strip(eq) : { activo: true, creadoPor: myId, creadoEn: new Date().toISOString() }, { nombre, tipo, modelo, placa, editadoPor: myId, editadoEn: new Date().toISOString() }));
+      close(); toast(tipo === "Volquete" && !eq ? nombre + " ya aparece en Volquetes." : "Equipo guardado.");
+    } catch (er) { $("#qeErr").textContent = errMsg(er); $("#qeSave").disabled = false; }
+  });
+}
+/* Equipo nuevo desde el registro de diésel: solo pide el tipo (y el modelo si lo saben). */
+function pedirEquipoNuevo(nombre) {
+  return new Promise(res => {
+    const close = modal(`<header><h3>Equipo nuevo</h3><button class="btn ghost small" id="neClose" aria-label="Cancelar">✕</button></header>
+      <div class="body"><p style="margin:0">“<b>${esc(nombre)}</b>” no está en la lista de equipos. ¿Qué tipo de equipo es?</p>
+      ${fld("neModelo", "Modelo / marca (opcional)", "", { ph: "XY470, 490M4U" })}
+      <div class="tipobtns">${TIPOS_EQ.map(t => `<button type="button" class="btn" data-tipo="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <p class="hintline" style="margin:0">Se agrega a Logística → Equipos. La placa y otros datos los puedes poner después.</p></div>`);
+    const done = v => { close(); res(v); };
+    $("#neClose").onclick = () => done(null);
+    $$("#overlayRoot [data-tipo]").forEach(b => { b.onclick = () => done({ tipo: b.dataset.tipo, modelo: $("#neModelo").value.trim() }); });
+    $("#neModelo").focus();
+  });
+}
+function renderProximo() {
+  const t = PROX_TIPO[S.view], eqs = S.equipos.filter(e => e.tipo === t && e.activo !== false);
+  $("#pxEquipos").innerHTML = eqs.length ? `<b>${esc(t)}s en la lista:</b> ${eqs.map(e => esc(e.nombre) + (e.modelo ? " (" + esc(e.modelo) + ")" : "")).join(", ")}. Ya puedes cargarles diésel.`
+    : `Aún no hay equipos de tipo “${esc(t)}” en la lista. <button class="btn small" data-go="equipos">Agregar en Equipos</button>`;
+}
+/* autocompletado de equipo */
+let EQC = null;
+function initEqCombo() {
+  const inp = $("#dEquipo"), ul = $("#dEqList"); let items = [], act = -1;
+  const cerrar = () => { ul.hidden = true; inp.setAttribute("aria-expanded", "false"); act = -1; };
+  const abrir = () => {
+    const q = norm(inp.value); if (!q) { cerrar(); return; }
+    const emp = [], con = [];
+    S.equipos.filter(e => e.activo !== false && e.tipo !== "Volquete").forEach(e => { const k = norm(e.nombre); if (k.startsWith(q) || k.split(" ").some(w => w.startsWith(q))) emp.push(e); else if (k.includes(q) || [e.tipo, e.modelo, e.placa].some(x => norm(x).includes(q))) con.push(e); });
+    const by = (a, b) => a.nombre.localeCompare(b.nombre, "es");
+    items = emp.sort(by).concat(con.sort(by)).slice(0, 8);
+    const exacto = items.some(e => norm(e.nombre) === q);
+    ul.innerHTML = items.map((e, i) => `<li role="option" data-i="${i}" aria-selected="${i === act}"><span>${esc(e.nombre)}</span><small>${esc([e.tipo, e.modelo].filter(Boolean).join(" · "))}</small></li>`).join("") +
+      (exacto ? "" : `<li class="nuevo" role="option" data-i="-1" aria-selected="false">Equipo nuevo: “${esc(inp.value.trim())}”</li>`);
+    ul.hidden = false; inp.setAttribute("aria-expanded", "true");
+  };
+  const elegir = i => { if (i >= 0 && items[i]) inp.value = items[i].nombre; cerrar(); $("#dObs").focus(); };
+  inp.addEventListener("input", () => { act = -1; abrir(); });
+  inp.addEventListener("focus", () => { if (inp.value) abrir(); });
+  inp.addEventListener("blur", () => setTimeout(cerrar, 150));
+  inp.addEventListener("keydown", e => {
+    if (ul.hidden) return; const n = items.length;
+    if (e.key === "ArrowDown") { e.preventDefault(); act = n ? (act + 1) % n : -1; abrir(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); act = n ? (act - 1 + n) % n : -1; abrir(); }
+    else if (e.key === "Enter") { e.preventDefault(); elegir(act >= 0 ? act : (n === 1 ? 0 : -1)); }
+    else if (e.key === "Escape") cerrar();
+  });
+  ul.addEventListener("mousedown", e => { const li = e.target.closest("li"); if (!li) return; e.preventDefault(); elegir(Number(li.dataset.i)); });
+  EQC = { abierto: () => !ul.hidden, cerrar };
+}
+async function pdfDiesel(mes) {
+  if (!window.jspdf) { toast("No cargó la herramienta de PDF. Revisa tu internet y recarga."); return; }
+  await ensure(mes, ["diesel"]); await Promise.all(mesesDespues(mes).map(m => ensure(m, ["diesel"])));
+  const { movs, despues, inicio, fin } = corridaDiesel(mes), c = cfg();
+  const doc = new window.jspdf.jsPDF({ unit: "pt", format: "a4" }), R = t => ({ content: t, styles: { halign: "right" } });
+  const S2 = (ms, tipo, k = "galones") => sum(ms.filter(d => d.tipo === tipo), d => d[k]);
+  const filas = TANQUES.map(t => { const ms = movs.filter(d => d.tanque === t.id); return [pdfSafe(tanqueNombre(t.id)), R(nf(inicio[t.id])), R(nf(S2(ms, "compra"))), R(nf(S2(ms, "consumo"))), R(pdfSafe(signed(S2(ms, "ajuste", "delta")))), R(nf(fin[t.id]))]; });
+  const T = k => r2(TANQUES.reduce((a, t) => a + num(k(t)), 0));
+  pdfTablaBW(doc, { startY: PDF_M + 48, head: [["Tanque", R("Saldo al inicio"), R("Compras"), R("Consumo"), R("Ajustes"), R("Saldo al final")]], body: filas,
+    foot: [["TOTAL", R(nf(T(t => inicio[t.id]))), R(nf(S2(movs, "compra"))), R(nf(S2(movs, "consumo"))), R(pdfSafe(signed(S2(movs, "ajuste", "delta")))), R(nf(T(t => fin[t.id])))]] });
+  let y = doc.lastAutoTable.finalY + 22; if (y > 740) { doc.addPage(); y = PDF_M + 60; }
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10.5); doc.setTextColor(0); doc.text("Movimientos", PDF_M, y);
+  pdfTablaBW(doc, { startY: y + 6, head: [["Fecha", "Tanque", R("Compra"), R("Consumo"), R("Saldo"), "Equipo / proveedor", "Obs."]],
+    body: movs.length ? movs.map(d => [fechaTxt(d.fecha), pdfSafe(tanqueNombre(d.tanque)), R(d.tipo === "compra" ? nf(d.galones) : ""), R(d.tipo === "consumo" ? nf(d.galones) : ""), R(despues[d.id] === undefined ? "" : nf(despues[d.id])),
+      pdfSafe(d.tipo === "consumo" ? eqNombre(d) : d.tipo === "compra" ? "Compra" + (d.proveedor ? " - " + d.proveedor : "") + (d.total ? " (S/ " + fmt(d.total) + ")" : "") : "Ajuste " + signed(d.delta) + " (medido " + nf(d.medido) + ")"), pdfSafe(d.obs || "")])
+      : [[{ content: "Sin movimientos en el mes", colSpan: 7, styles: { halign: "center" } }]],
+    foot: [["TOTAL", "", R(nf(S2(movs, "compra"))), R(nf(S2(movs, "consumo"))), "", "", ""]],
+    columnStyles: { 0: { cellWidth: 58 }, 1: { cellWidth: 56 }, 2: { cellWidth: 52 }, 3: { cellWidth: 52 }, 4: { cellWidth: 56 }, 5: { cellWidth: "auto" }, 6: { cellWidth: 100 } } });
+  const ce = consumoPorEquipo(movs), tot = sum(ce, x => x.gal);
+  y = doc.lastAutoTable.finalY + 22; if (y > 740) { doc.addPage(); y = PDF_M + 60; }
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10.5); doc.text("Consumo por equipo", PDF_M, y);
+  pdfTablaBW(doc, { startY: y + 6, head: [["Equipo", "Tipo", R("Cargas"), R("Galones"), R("% del consumo")]],
+    body: ce.length ? ce.map(x => [pdfSafe(x.nombre), pdfSafe(x.tipo || "-"), R(String(x.n)), R(nf(x.gal)), R(tot ? nf(x.gal / tot * 100, 0) + " %" : "-")]) : [[{ content: "Sin consumos", colSpan: 5, styles: { halign: "center" } }]],
+    foot: [["TOTAL", "", R(String(sum(ce, x => x.n))), R(nf(tot)), ""]] });
+  const pt = {}; ce.forEach(x => { const k = x.tipo || "Sin tipo"; pt[k] = r2((pt[k] || 0) + x.gal); });
+  if (ce.length) { doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.text(pdfSafe("Por tipo: " + Object.entries(pt).sort((a, b) => b[1] - a[1]).map(([k, g]) => k + " " + nf(g) + " gal").join("  -  ")), PDF_M, doc.lastAutoTable.finalY + 14); }
+  const linea2 = [S.config.empresa || "", c.ruc ? "RUC " + c.ruc : ""].filter(Boolean).join("  ·  ");
+  pdfEncabezados(doc, "CONTROL DE DIÉSEL (GALONES)", nombreMesL(mes), linea2, nombreMesL(mes));
+  await saveFile("diesel-" + mes + ".pdf", doc.output("blob"));
+}
+
+/* ===== VENTAS: FACTURAS Y GUÍAS ===== */
+const GUIA_BASE = "EG07-907", FACT_BASE = "E001-2293";
+const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const facVigentes = () => S.facturas.filter(f => f.estado !== "anulada");
+const facPendientes = () => facVigentes().filter(f => !calcFactura(f).completa);
+const facById = id => S.facturas.find(f => f.id === id) || null;
+const todasGuias = () => S.facturas.filter(f => f.estado !== "anulada").flatMap(f => (f.guias || []).map(g => Object.assign({ factura: f }, g)));
+const porReciente = (a, b) => String(b.en || b.creadoEn || "").localeCompare(String(a.en || a.creadoEn || ""));
+const sigGuia = () => { const u = todasGuias().sort(porReciente)[0]; return incCodigo(u ? u.guia : (S.config.ultimaGuia || GUIA_BASE)); };
+const sigFactura = () => { const u = S.facturas.slice().sort(porReciente)[0]; return incCodigo(u ? u.codigo : (S.config.ultimaFactura || FACT_BASE)); };
+const matNombre = pid => { const p = prodById(pid); return p ? (p.abrev || p.nombre) : "Otro material"; };
+const faltaTotal = f => r2(sum(faltaFactura(f), x => x.falta));
+const guiaDe = m => ({ movId: m.id, mes: mesDe(m.fecha), fecha: m.fecha, ticket: m.ticket || "", guia: m.guia || "", placa: m.placa || "", licencia: m.licencia || "",
+  items: itemsDe(m).map(i => ({ productoId: i.productoId || "", material: i.material || "", cantidad: num(i.cantidad) })), obs: m.obs || "", en: m.creadoEn || new Date().toISOString() });
+const ponerGuia = (fid, e) => actualizarFactura(fid, f => Object.assign({}, f, { guias: (f.guias || []).filter(g => g.movId !== e.movId).concat([e]) }));
+const quitarGuia = (fid, movId) => actualizarFactura(fid, f => Object.assign({}, f, { guias: (f.guias || []).filter(g => g.movId !== movId) }));
+async function actualizarFactura(id, fn) {
+  if (navigator.onLine === false) throw { code: "offline" };
+  const ref = db.doc("facturas/" + id);
+  return db.runTransaction(async tx => {
+    const s = await tx.get(ref);
+    if (!s.exists) throw { code: "sin_factura" };
+    const nd = calcFactura(fn(s.data() || {}));
+    tx.set(ref, nd);
+    return nd;
+  });
+}
+function licenciaDePlaca(placa) {
+  const k = norm(placa).replace(/[^a-z0-9]/g, ""); if (!k) return "";
+  const g = todasGuias().filter(x => x.licencia && norm(x.placa).replace(/[^a-z0-9]/g, "") === k).sort(porReciente)[0];
+  return g ? g.licencia : "";
+}
+function guiaRepetida(guia, movId) {
+  const k = normCodigo(guia); if (!k) return null;
+  return todasGuias().find(g => g.movId !== movId && normCodigo(g.guia) === k) || null;
+}
+function chequeoFactura(v, movId) {
+  const f = facById(v.facturaId);
+  if (!f) return "Esa factura no está en la lista. Regístrala primero en Ventas → Facturas y guías.";
+  if (f.estado === "anulada") return "La factura " + f.codigo + " está anulada.";
+  const r = guiaRepetida(v.guia, movId);
+  if (r) return "La guía " + r.guia + " ya está registrada (" + (r.ticket ? r.ticket + ", " : "") + "factura " + r.factura.codigo + ").";
+  const ex = excesoGuia(f, itemsDe(v), movId);
+  if (ex.length && !String(v.obs || "").trim()) return "Pasa lo que falta de la factura " + f.codigo + " (" + ex.map(x => matNombre(x.productoId) + ": lleva " + nf(x.cantidad) + ", falta " + nf(x.falta) + " m³").join("; ") + "). Escribe el motivo en Obs.";
+  return "";
+}
+/* Facturas como filas del registro del día: se ven y salen en el PDF, pero no entran al cuadre */
+function facturasDia(f) {
+  return S.facturas.filter(x => x.fecha === f).map(x => ({ id: "fac_" + x.id, facId: x.id, tipo: "factreg", fecha: x.fecha, orden: num(x.orden), cliente: x.razonSocial || "", ruc: x.ruc || "", codigo: x.codigo,
+    items: x.items || [], monto: x.total, pago: x.pago, banco: x.banco || "", obs: x.obs || "", creadoPor: x.creadoPor, estado: x.estado === "anulada" ? "anulado" : "ok", motivoAnulacion: x.motivoAnulacion || "" }));
+}
+
+/* --- combo de facturas en la fila rápida --- */
+const QF = { id: null, items: [], act: -1 };
+function buscarFacturas(q) {
+  const n = norm(q), d = n.replace(/\D/g, "");
+  const ps = facPendientes().sort((a, b) => num(parteNum(b.codigo)) - num(parteNum(a.codigo)));
+  if (!n) return ps.slice(0, 8);
+  return ps.filter(f => (d && String(parteNum(f.codigo) ?? "").includes(d)) || norm(f.codigo).includes(n) || norm(f.razonSocial).includes(n) || String(f.ruc || "").startsWith(n)).slice(0, 8);
+}
+function cerrarFac() { $("#qFacList").hidden = true; $("#qFac").setAttribute("aria-expanded", "false"); QF.act = -1; }
+function abrirFac() {
+  QF.items = buscarFacturas($("#qFac").value);
+  const ul = $("#qFacList");
+  ul.innerHTML = QF.items.length ? QF.items.map((f, i) => `<li role="option" data-i="${i}" aria-selected="${i === QF.act}"><span><b>${esc(f.codigo)}</b> ${esc(f.razonSocial || "")}</span><small>faltan ${nf(faltaTotal(f))} m³</small></li>`).join("")
+    : `<li class="nuevo" data-i="-1">${facPendientes().length ? "Ninguna factura por despachar coincide." : "No hay facturas por despachar."} Regístrala en Facturas y guías.</li>`;
+  ul.hidden = false; $("#qFac").setAttribute("aria-expanded", "true");
+}
+function elegirFactura(f, sinFoco) {
+  cerrarFac(); if (!f) return;
+  QF.id = f.id; $("#qFac").value = f.codigo; $("#qCliente").value = f.razonSocial || "";
+  if (!$("#qGuia").value) $("#qGuia").value = sigGuia();
+  const pend = faltaFactura(f).filter(x => x.falta > 0), enF = new Set((f.items || []).map(i => i.productoId));
+  if ((!QI.items.some(it => it.productoId) || QI.items.some(it => it.productoId && !enF.has(it.productoId))) && (f.items || []).length) {
+    QI.items = [{ productoId: pend.length ? pend[0].productoId : f.items[0].productoId, cant: QI.items[0] ? QI.items[0].cant : "" }]; QI.render();
+  }
+  calcQuick();
+  if (!sinFoco) $("#qPlaca").focus();
+}
+function initFacCombo() {
+  const inp = $("#qFac"), ul = $("#qFacList");
+  inp.addEventListener("input", () => { QF.id = null; QF.act = -1; abrirFac(); calcQuick(); });
+  inp.addEventListener("focus", abrirFac);
+  inp.addEventListener("blur", () => setTimeout(() => {
+    cerrarFac();
+    if (!QF.id && inp.value.trim()) { const k = normCodigo(inp.value, sigFactura()), f = facPendientes().find(x => normCodigo(x.codigo) === k); if (f) elegirFactura(f, true); }
+  }, 150));
+  inp.addEventListener("keydown", e => {
+    if (ul.hidden) return;
+    const n = QF.items.length;
+    if (e.key === "ArrowDown") { e.preventDefault(); QF.act = n ? (QF.act + 1) % n : -1; abrirFac(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); QF.act = n ? (QF.act - 1 + n) % n : -1; abrirFac(); }
+    else if (e.key === "Enter") { e.preventDefault(); const i = QF.act >= 0 ? QF.act : (n === 1 ? 0 : -1); if (i >= 0) elegirFactura(QF.items[i]); }
+    else if (e.key === "Escape") cerrarFac();
+  });
+  ul.addEventListener("mousedown", e => { const li = e.target.closest("li"); if (!li) return; e.preventDefault(); const i = Number(li.dataset.i); if (i >= 0) elegirFactura(QF.items[i]); });
+  $("#qPlaca").addEventListener("input", () => { if ($("#qTipo").value !== "factura" || $("#qLic").value.trim()) return; const l = licenciaDePlaca($("#qPlaca").value); if (l) $("#qLic").value = l; });
+  $("#qGuia").addEventListener("blur", e => { e.target.value = normCodigo(e.target.value, sigGuia()); });
+}
+
+/* --- pantalla de facturas --- */
+function guiasMes(mes) {
+  return todasGuias().filter(g => g.mes === mes).sort((a, b) => a.fecha.localeCompare(b.fecha) || num(parteNum(a.guia)) - num(parteNum(b.guia)));
+}
+function renderFacturas() {
+  const mes = S.mes, pend = facPendientes(), fm = facVigentes().filter(f => mesDe(f.fecha) === mes), gm = guiasMes(mes);
+  const falta = r2(sum(pend, faltaTotal)), m3g = r2(sum(gm, g => sum(g.items, i => i.cantidad)));
+  const fb = r2(sum(fm.filter(f => f.pago !== "efectivo"), f => f.total)), fe = r2(sum(fm.filter(f => f.pago === "efectivo"), f => f.total));
+  $("#faTiles").innerHTML =
+    tile("Por despachar", String(pend.length), pend.length ? "faltan " + nf(falta) + " m³" : "Todas despachadas", "key", pend.length ? "down" : "up") +
+    tile("Facturado en " + nombreMes(mes, true).toLowerCase(), soles(r2(fb + fe)), fm.length + " factura(s) · banco " + soles(fb) + " · efectivo " + soles(fe)) +
+    tile("Guías en " + nombreMes(mes, true).toLowerCase(), String(gm.length), nf(m3g) + " m³ despachados");
+  $$("#faSeg button").forEach(b => b.setAttribute("aria-selected", b.dataset.fa === S.faSeg ? "true" : "false"));
+  const q = norm($("#faBus").value);
+  let list = S.facturas.filter(f => {
+    const an = f.estado === "anulada", comp = calcFactura(f).completa;
+    return S.faSeg === "todas" || (S.faSeg === "pend" ? !an && !comp : !an && comp);
+  });
+  if (q) list = list.filter(f => norm(f.codigo).includes(q) || norm(f.razonSocial).includes(q) || String(f.ruc || "").includes(q) || (f.guias || []).some(g => norm(g.guia).includes(q) || norm(g.placa).includes(q)));
+  list.sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)) || num(parteNum(b.codigo)) - num(parteNum(a.codigo)));
+  const t = $("#tFac");
+  if (!list.length) {
+    t.innerHTML = `<tbody><tr><td class="empty wide" colspan="6">${!S.facturas.length ? "Aún no hay facturas. Registra la primera con “Nueva factura”." : q ? "Ninguna factura coincide con la búsqueda." : S.faSeg === "pend" ? "No hay facturas por despachar. Todo está entregado." : "No hay facturas en esta lista."}</td></tr></tbody>`;
+  } else {
+    t.innerHTML = `<thead><tr><th>Factura</th><th>Cliente</th><th>Despachado / facturado</th><th>Estado</th><th class="num">Total</th><th></th></tr></thead><tbody>` + list.map(f => {
+      const c = calcFactura(f), an = f.estado === "anulada", fl = faltaFactura(f), ex = r2(c.m3Desp - c.m3), abierta = S.faOpen.has(f.id);
+      const prods = fl.map(x => { const pc = x.pedido > 0 ? Math.min(100, x.desp / x.pedido * 100) : 100, ok = x.falta <= 0.004;
+        return `<div class="fprod"><span>${esc(x.material)}</span><b>${nf(x.desp)} / ${nf(x.pedido)} m³</b><div class="meter ${ok ? "ok" : "pend"}" role="img" aria-label="${esc(x.material)}: ${nf(x.desp)} de ${nf(x.pedido)} m³"><span style="width:${pc.toFixed(0)}%"></span></div></div>`; }).join("");
+      const est = an ? `<span class="pill">Anulada</span>` : c.completa ? `<span class="pill good">✓ Despachada completa</span>` : `<span class="pill bad">Pendiente · faltan ${nf(faltaTotal(f))} m³</span>`;
+      const exT = !an && ex > 0.004 ? `<span class="pill warn">+${nf(ex)} m³ de más</span>` : "";
+      const acts = `<button class="btn small" data-act="faguias" data-id="${esc(f.id)}" aria-expanded="${abierta}">Guías (${c.nGuias})</button>` +
+        (an ? `<button class="btn small" data-act="famotivo" data-id="${esc(f.id)}">Ver motivo</button>`
+            : `<span class="needs-write"><button class="btn small" data-act="faedit" data-id="${esc(f.id)}">Editar</button><button class="btn small ghost" data-act="faanular" data-id="${esc(f.id)}">Anular</button></span>`);
+      const det = !abierta ? "" : `<tr class="fdet"><td colspan="6" class="wide"><div class="glist">${(f.guias || []).length ? f.guias.slice().sort((a, b) => a.fecha.localeCompare(b.fecha) || num(parteNum(a.guia)) - num(parteNum(b.guia))).map(g =>
+        `<div class="g"><span>${esc(fechaTxt(g.fecha))}</span><b>Guía ${esc(g.guia)}</b><span>${esc(g.ticket)}</span><span>${esc(g.items.map(i => nf(i.cantidad) + " m³ " + i.material).join(" + "))}</span><span>Placa ${esc(g.placa || "—")}</span><span>Lic. ${esc(g.licencia || "—")}</span>${g.obs ? `<span class="muted">${esc(g.obs)}</span>` : ""}<button class="btn small" data-act="abrirdia" data-f="${esc(g.fecha)}">Abrir día</button></div>`).join("")
+        : `<span class="muted">Todavía no sale ningún carro con esta factura.</span>`}</div></td></tr>`;
+      return `<tr class="${an ? "anul" : c.completa ? "fok" : "fpend"}"><td data-l="Factura"><b>${esc(f.codigo)}</b><span class="by">${esc(fechaTxt(f.fecha))}</span></td>
+        <td data-l="Cliente" class="wide">${esc(f.razonSocial || "")}<span class="by">RUC ${esc(f.ruc || "—")}</span>${byTag(f)}</td>
+        <td data-l="Despachado / facturado" class="wide">${prods}</td>
+        <td data-l="Estado"><div class="estados">${est}${exT}</div></td>
+        <td class="num" data-l="Total">${soles(f.total)}<span class="by">${f.pago === "efectivo" ? "Efectivo" : "Banco" + (f.banco ? " " + esc(f.banco) : "")}</span></td>
+        <td class="acts">${acts}</td></tr>` + det;
+    }).join("") + "</tbody>";
+  }
+  resolveNames();
+  const tg = $("#tGuias");
+  if (!gm.length) { tg.innerHTML = `<tbody><tr><td class="empty wide" colspan="10">Aún no hay guías en ${esc(nombreMes(mes))}.</td></tr></tbody>`; return; }
+  tg.innerHTML = `<thead><tr><th>Fecha</th><th>Agregado</th><th class="num">m³</th><th>N° guía</th><th>RUC</th><th>Factura</th><th>Licencia</th><th>Placa</th><th>Razón social</th><th>Ticket</th></tr></thead><tbody>` +
+    gm.map(g => `<tr><td data-l="Fecha">${esc(fechaTxt(g.fecha))}</td><td data-l="Agregado">${g.items.map(i => esc(i.material)).join("<br>")}</td><td class="num" data-l="m³">${g.items.map(i => nf(i.cantidad)).join("<br>")}</td>
+      <td data-l="N° guía"><b>${esc(g.guia)}</b></td><td data-l="RUC">${esc(g.factura.ruc || "")}</td><td data-l="Factura">${esc(g.factura.codigo)}</td><td data-l="Licencia">${esc(g.licencia || "—")}</td><td data-l="Placa">${esc(g.placa || "—")}</td>
+      <td data-l="Razón social" class="wide">${esc(g.factura.razonSocial || "")}</td><td data-l="Ticket">${esc(g.ticket)}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>TOTAL</td><td data-l="Guías">${gm.length} guía(s)</td><td class="num" data-l="m³">${nf(m3g)}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tfoot>`;
+}
+function openFactura(f) {
+  if (!db) { toast("Todavía no hay conexión con la base de datos."); return; }
+  const close = modal(`<header><h3>${f ? "Editar factura " + esc(f.codigo) : "Nueva factura"}</h3><button class="btn ghost small" id="xClose" aria-label="Cerrar">✕</button></header>
+    <form id="xForm" novalidate>
+      ${fld("xCod", "N° de factura", f ? f.codigo : sigFactura(), { half: 1, req: 1, ph: "E001-2294", hint: f ? undefined : "Sale el siguiente. Cámbialo si no es." })}
+      ${fld("xFecha", "Fecha", "", { half: 1, req: 1, html: `<input id="xFecha" type="date" value="${esc(f ? f.fecha : S.dia)}">` })}
+      ${fld("xRuc", "RUC del comprador", "", { half: 1, req: 1, html: `<input id="xRuc" inputmode="numeric" maxlength="11" placeholder="20123456789" value="${esc(f ? f.ruc : "")}" autocomplete="off">`, hint: "" })}
+      ${fld("xRazon", "Razón social", f ? f.razonSocial : "", { req: 1, dl: "dlCli" })}
+      <div class="fld"><label>Productos y m³ de la factura <span style="color:var(--bad)">*</span></label><div id="xItems" class="qitems"></div></div>
+      ${fld("xTotal", "Total de la factura (S/)", f ? fmt(f.total) : "", { half: 1, req: 1, money: 1, hint: "" })}
+      ${fld("xPago", "Pago", "", { half: 1, req: 1, html: `<select id="xPago"><option value="banco">Banco / transferencia</option><option value="efectivo">Efectivo</option></select>` })}
+      ${fld("xBanco", "Banco", f ? f.banco : "", { half: 1, dl: "dlBanco", hint: "Opcional." })}
+      ${fld("xObs", "Obs.", f ? f.obs : "")}
+      <div class="rule">No entra al cuadre de la mesa. Sale en el registro del día de su fecha. Cada carro se anota en Agregar fila con el tipo “Ya pagado (factura)”.</div>
+      <div class="formerr" id="xErr"></div>
+      <div class="foot"><button type="button" class="btn" id="xCancel">Cancelar</button><button type="submit" class="btn primary" id="xSave">Guardar factura</button></div>
+    </form>`);
+  $("#xClose").onclick = close; $("#xCancel").onclick = close;
+  $("#xPago").value = f && f.pago === "efectivo" ? "efectivo" : "banco";
+  const banco = () => { $("#xBanco").closest(".fld").hidden = $("#xPago").value !== "banco"; };
+  banco(); $("#xPago").addEventListener("change", banco);
+  let manual = !!f, razonAuto = false;
+  const XI = crearItems($("#xItems"), "x", f ? (f.items || []).map(i => ({ productoId: i.productoId || "", cant: i.cantidad ?? "", precioUnit: i.precioUnit ?? null, material: i.material || "" })) : [], fromInput => { if (fromInput && !f) manual = false; recalc(); });
+  XI.addTxt = "+ Otro producto en la factura";
+  const recalc = () => {
+    const r = XI.calc(true);
+    if (r.todos) { if (!manual) $("#xTotal").value = fmt(r.total); $("#xTotal_h").innerHTML = `Con precios de lista: ${r.partes.join(" + ")} = <b>S/ ${fmt(r.total)}</b>. Si la factura tiene otro precio, cambia el total.`; }
+    else $("#xTotal_h").textContent = "";
+  };
+  XI.render();
+  $("#xTotal").addEventListener("input", () => { manual = true; });
+  const rucHint = () => {
+    const ruc = $("#xRuc").value.replace(/\D/g, ""), h = $("#xRuc_h"); $("#xRuc").value = ruc;
+    if (!ruc) { h.textContent = "11 dígitos. Si ya es cliente, la razón social sale sola."; return; }
+    if (ruc.length !== 11) { h.textContent = "El RUC tiene 11 dígitos (van " + ruc.length + ")."; return; }
+    const c = S.clientes.find(x => x.ruc === ruc);
+    if (c) { if (!$("#xRazon").value.trim() || razonAuto) { $("#xRazon").value = c.nombre; razonAuto = true; } h.textContent = "✓ Cliente conocido: " + c.nombre; }
+    else h.textContent = "RUC nuevo: escribe la razón social. La próxima vez saldrá sola.";
+  };
+  $("#xRuc").addEventListener("input", rucHint); rucHint();
+  $("#xRazon").addEventListener("input", () => { razonAuto = false; });
+  $("#xRazon").addEventListener("change", () => { if ($("#xRuc").value) return; const c = S.clientes.find(x => norm(x.nombre) === norm($("#xRazon").value) && x.ruc); if (c) { $("#xRuc").value = c.ruc; rucHint(); } });
+  $("#xCod").addEventListener("blur", e => { e.target.value = normCodigo(e.target.value, f ? f.codigo : sigFactura()); });
+  (f ? $("#xRuc") : $("#xCod")).focus();
+  $("#xForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = t => { $("#xErr").textContent = t; };
+    const codigo = normCodigo($("#xCod").value, f ? f.codigo : sigFactura()), fecha = $("#xFecha").value, ruc = $("#xRuc").value.replace(/\D/g, "");
+    const razon = $("#xRazon").value.trim().replace(/\s+/g, " "), items = juntarItems(XI.listos()), total = parseMonto($("#xTotal").value), pago = $("#xPago").value;
+    if (parteNum(codigo) === null) return err("Escribe el número de la factura (ej.: E001-2294).");
+    if (S.facturas.some(x => (!f || x.id !== f.id) && normCodigo(x.codigo) === codigo)) return err("La factura " + codigo + " ya está registrada.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return err("Elige la fecha de la factura.");
+    if (ruc.length !== 11) return err("El RUC tiene 11 dígitos.");
+    if (!razon) return err("Falta la razón social.");
+    if (!items.length) return err("Elige al menos un producto.");
+    for (const it of items) { if (!it.productoId) return err("Elige el material de cada producto."); if (!(it.cantidad > 0)) return err("Falta la cantidad en m³ de " + (it.material || "un producto") + "."); }
+    if (!(total > 0)) return err("Escribe el total de la factura (mayor que cero).");
+    const now = new Date().toISOString();
+    const cambios = { codigo, serie: codigo.split("-")[0], numero: parteNum(codigo), fecha, ruc, razonSocial: razon, items, total: r2(total), pago, banco: pago === "banco" ? $("#xBanco").value.trim() : "", obs: $("#xObs").value.trim(), editadoPor: myId, editadoEn: now };
+    $("#xSave").disabled = true;
+    try {
+      if (f) await actualizarFactura(f.id, old => Object.assign({}, old, cambios));
+      else await db.doc("facturas/" + nuevoId()).set(calcFactura(Object.assign({ estado: "vigente", guias: [], orden: Date.now(), creadoPor: myId, creadoEn: now }, cambios)));
+      recordarCliente(razon, "", ruc).catch(() => {});
+      close(); toast("Factura " + codigo + " guardada.");
+    } catch (er) { err(errMsg(er)); $("#xSave").disabled = false; }
+  });
+}
+function anularFactura(f) {
+  const n = (f.guias || []).length;
+  if (n) { toast("La factura " + f.codigo + " tiene " + n + " guía(s). Primero anula esos tickets en el registro del día."); return; }
+  const close = modal(`<header><h3>Anular factura ${esc(f.codigo)}</h3><button class="btn ghost small" id="aClose" aria-label="Cerrar">✕</button></header>
+    <form id="aForm" novalidate>
+      <div class="rule">${esc(f.razonSocial || "")} · ${esc(soles(f.total))}. No se borra: queda en la lista como ANULADA y ya no sale para despachar.</div>
+      <div class="fld"><label for="aMotivo">Motivo de la anulación <span style="color:var(--bad)">*</span></label><textarea id="aMotivo" rows="3" placeholder="Ej.: se emitió con el RUC equivocado"></textarea></div>
+      <div class="formerr" id="aErr"></div>
+      <div class="foot"><button type="button" class="btn" id="aCancel">Cancelar</button><button type="submit" class="btn danger" id="aOk">Anular factura</button></div>
+    </form>`);
+  $("#aClose").onclick = close; $("#aCancel").onclick = close; $("#aMotivo").focus();
+  $("#aForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const m = $("#aMotivo").value.trim();
+    if (m.length < 5) { $("#aErr").textContent = "Escribe el motivo de la anulación. Es obligatorio."; return; }
+    $("#aOk").disabled = true;
+    try {
+      await actualizarFactura(f.id, old => { if ((old.guias || []).length) throw { code: "con_guias" }; return Object.assign({}, old, { estado: "anulada", motivoAnulacion: m, anuladoPor: myId, anuladoEn: new Date().toISOString() }); });
+      close(); toast("Factura " + f.codigo + " anulada.");
+    } catch (er) { $("#aErr").textContent = er && er.code === "con_guias" ? "Esta factura ya tiene guías. Primero anula esos tickets." : errMsg(er); $("#aOk").disabled = false; }
+  });
+}
+async function pdfGuias(mes) {
+  if (!window.jspdf) { toast("No cargó la herramienta de PDF. Revisa tu internet y recarga."); return; }
+  const doc = new window.jspdf.jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
+  const M = PDF_M, H = doc.internal.pageSize.getHeight(), TOP = M + 48, R = t => ({ content: t, styles: { halign: "right" } });
+  const gs = guiasMes(mes), m3 = r2(sum(gs, g => sum(g.items, i => i.cantidad)));
+  const body = gs.map(g => [fechaTxt(g.fecha), pdfSafe(g.items.map(i => i.material).join("\n")), { content: g.items.map(i => nf(i.cantidad)).join("\n"), styles: { halign: "right" } }, pdfSafe(g.guia), g.factura.ruc || "", pdfSafe(g.factura.codigo), pdfSafe(g.licencia), pdfSafe(g.placa), pdfSafe(g.factura.razonSocial), pdfSafe(g.ticket)]);
+  if (!body.length) body.push([{ content: "Sin guías en el mes", colSpan: 10, styles: { halign: "center" } }]);
+  pdfTablaBW(doc, { head: [["Fecha", "Agregado", R("m3"), "N° guía", "RUC", "Factura", "Licencia", "Placa", "Razón social", "Ticket"]], body, startY: TOP,
+    foot: [["TOTAL", gs.length + " guía(s)", R(nf(m3)), "", "", "", "", "", "", ""]],
+    columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 80 }, 2: { cellWidth: 40 }, 3: { cellWidth: 66 }, 4: { cellWidth: 72 }, 5: { cellWidth: 66 }, 6: { cellWidth: 66 }, 7: { cellWidth: 56 }, 8: { cellWidth: "auto" }, 9: { cellWidth: 40 } } });
+  const fs = S.facturas.filter(f => mesDe(f.fecha) === mes || (f.estado !== "anulada" && !calcFactura(f).completa) || (f.guias || []).some(g => g.mes === mes))
+    .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)) || num(parteNum(a.codigo)) - num(parteNum(b.codigo)));
+  let y = doc.lastAutoTable.finalY + 26;
+  if (y > H - M - 110) { doc.addPage(); y = TOP; }
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0); doc.text("FACTURAS (del mes y las que faltan despachar)", M, y - 8);
+  const fb = fs.map(f => { const fl = faltaFactura(f), c = calcFactura(f), an = f.estado === "anulada";
+    return [pdfSafe(f.codigo), fechaTxt(f.fecha), f.ruc || "", pdfSafe(f.razonSocial), pdfSafe(fl.map(x => x.material + " " + nf(x.pedido)).join("\n")), { content: fl.map(x => nf(x.desp)).join("\n"), styles: { halign: "right" } },
+      { content: fl.map(x => nf(x.falta)).join("\n"), styles: { halign: "right" } }, an ? "ANULADA" : c.completa ? "DESPACHADA" : "PENDIENTE", R(fmt(f.total)), f.pago === "efectivo" ? "Efectivo" : "Banco"]; });
+  if (!fb.length) fb.push([{ content: "Sin facturas", colSpan: 10, styles: { halign: "center" } }]);
+  pdfTablaBW(doc, { head: [["Factura", "Fecha", "RUC", "Razón social", "Pedido (m3)", R("Desp."), R("Falta"), "Estado", R("Total (S/)"), "Pago"]], body: fb, startY: y,
+    columnStyles: { 0: { cellWidth: 62 }, 1: { cellWidth: 56 }, 2: { cellWidth: 72 }, 3: { cellWidth: "auto" }, 4: { cellWidth: 100 }, 5: { cellWidth: 40 }, 6: { cellWidth: 40 }, 7: { cellWidth: 70 }, 8: { cellWidth: 66 }, 9: { cellWidth: 50 } } });
+  const c = cfg(), linea2 = [S.config.empresa || "", c.ruc ? "RUC " + c.ruc : ""].filter(Boolean).join("  ·  ");
+  pdfEncabezados(doc, "REGISTRO DE GUÍAS DE REMISIÓN", nombreMesL(mes), linea2, nombreMesL(mes));
+  await saveFile("guias-" + mes + ".pdf", doc.output("blob"));
 }
 
 /* ===== AJUSTES ===== */
@@ -1745,6 +2602,9 @@ function setMes(m, keepDia) {
 document.addEventListener("click", async e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.go) { go(b.dataset.go); return; }
+  if (b.dataset.dfil) { S.dFiltro = b.dataset.dfil; renderDieselTabla(); return; }
+  if (b.dataset.fa) { S.faSeg = b.dataset.fa; renderFacturas(); return; }
+  if (b.dataset.eqfil !== undefined) { S.eqFiltro = b.dataset.eqfil; renderEquipos(); return; }
   const act = b.dataset.act, id = b.dataset.id;
   const mov = () => movsDia(S.dia).find(x => x.id === id);
   if (act === "movedit") { const r = mov(); if (r) openEdit(r); }
@@ -1755,6 +2615,11 @@ document.addEventListener("click", async e => {
     if (!await confirmBox("Se borrará “" + esc(r.cliente || TIPOS[r.tipo].l) + (r.monto ? " · " + soles(r.monto) : "") + "” del " + esc(fechaTxt(r.fecha)) + ".", "Borrar")) return;
     try { await db.doc("m/" + mesDe(r.fecha) + "/mov/" + r.id).delete(); toast("Borrado."); } catch (er) { toast(errMsg(er)); }
   }
+  else if (act === "verfac") { const fa = facById(id); S.faSeg = "todas"; $("#faBus").value = fa ? fa.codigo : ""; if (fa) S.faOpen.add(fa.id); go("ventas-facturas"); }
+  else if (act === "faguias") { if (S.faOpen.has(id)) S.faOpen.delete(id); else S.faOpen.add(id); renderFacturas(); }
+  else if (act === "faedit") { const fa = facById(id); if (fa) openFactura(fa); }
+  else if (act === "faanular") { const fa = facById(id); if (fa) anularFactura(fa); }
+  else if (act === "famotivo") { const fa = facById(id); if (fa) verMotivo(Object.assign({}, fa, { ticket: "Factura " + fa.codigo, cliente: fa.razonSocial, monto: fa.total })); }
   else if (act === "cliedit") { const c = S.clientes.find(x => x.id === id); if (c) openCliente(c); }
   else if (act === "clidel") {
     const c = S.clientes.find(x => x.id === id); if (!c) return;
@@ -1765,6 +2630,24 @@ document.addEventListener("click", async e => {
   else if (act === "prodtoggle") { const p = prodById(id); if (!p) return; try { await db.doc("productos/" + p.id).update({ activo: p.activo === false }); } catch (er) { toast(errMsg(er)); } }
   else if (act === "abrirdia") { S.dia = b.dataset.f; go("ventas"); }
   else if (act === "pdfdia") { const f = b.dataset.f; b.disabled = true; try { await descargarPdfDia(f, diaDoc(f)); } finally { b.disabled = false; } }
+  else if (act === "dvq") {
+    const r = data(S.mes, "diesel").find(x => x.id === id); if (!r) return;
+    if (!VOLQUETES.some(v => v.id === r.equipoId)) { toast("Ese volquete ya no está activo en la lista de equipos."); return; }
+    const f = $("#vqFecha"); f.value = r.fecha; f.dataset.vq = r.equipoId; $("#vqForm").dataset.loaded = "";
+    go("volquete-" + r.equipoId);
+  }
+  else if (act === "dedit") { const r = data(S.mes, "diesel").find(x => x.id === id); if (r) openDieselEdit(r); }
+  else if (act === "ddel") { const r = data(S.mes, "diesel").find(x => x.id === id); if (r) borrarDiesel(r); }
+  else if (act === "eqedit") { const q = S.equipos.find(x => x.id === id); if (q) openEquipo(q); }
+  else if (act === "eqdel") {
+    const q = S.equipos.find(x => x.id === id); if (!q) return;
+    if (!await confirmBox("Se borrará " + esc(q.nombre) + " de la lista de equipos. Sus consumos registrados no cambian.", "Borrar")) return;
+    try { await db.doc("equipos/" + q.id).delete(); toast("Equipo borrado."); } catch (er) { toast(errMsg(er)); }
+  }
+  else if (act === "eqbaja") {
+    const q = S.equipos.find(x => x.id === id); if (!q) return;
+    try { await db.doc("equipos/" + q.id).update({ activo: q.activo === false }); toast(q.nombre + (q.activo === false ? " reactivado." : " dado de baja.")); } catch (er) { toast(errMsg(er)); }
+  }
   else if (act === "usudel") {
     if (!await confirmBox("Se quitará el acceso de " + esc(id) + ". Sus registros se conservan.", "Quitar acceso")) return;
     try { await db.doc("usuarios/" + id).delete(); toast("Acceso quitado."); } catch (er) { toast(errMsg(er)); }
@@ -1779,9 +2662,22 @@ document.addEventListener("change", async e => {
 $("#usuForm").addEventListener("submit", agregarUsuario);
 $("#bkExport").addEventListener("click", exportarRespaldo);
 $("#bkFile").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) importarRespaldo(f); e.target.value = ""; });
+initEqCombo();
+$("#dFEq").addEventListener("change", e => { S.dFEq = e.target.value; renderDieselTabla(); });
+$("#dFMov").addEventListener("change", e => { S.dFMov = e.target.value; renderDieselTabla(); });
+$("#dForm").addEventListener("submit", dieselSubmit);
+$("#dTipo").addEventListener("change", dieselTipo);
+["#dTanque", "#dGal", "#dPrecio"].forEach(id => $(id).addEventListener("input", dieselHint));
+$("#dGal").addEventListener("blur", e => { const v = parseMonto(e.target.value); if (v !== null && !Number.isNaN(v)) e.target.value = nf(v); });
+$("#fEq").addEventListener("input", renderEquipos);
+$("#eqNuevo").addEventListener("click", () => openEquipo(null));
+$("#dPdf").addEventListener("click", async function () { this.disabled = true; try { await pdfDiesel(S.mes); } catch (_) { toast("No se pudo generar el PDF."); } finally { this.disabled = false; } });
 $("#cliNuevo").addEventListener("click", () => db ? openCliente(null) : toast("Todavía no hay conexión con la base de datos."));
 $("#prodNuevo").addEventListener("click", () => db ? openProducto(null) : toast("Todavía no hay conexión con la base de datos."));
 $("#fCli").addEventListener("input", renderClientes);
+$("#faBus").addEventListener("input", renderFacturas);
+$("#faNueva").addEventListener("click", () => openFactura(null));
+$("#gPdf").addEventListener("click", async function () { this.disabled = true; try { await pdfGuias(S.mes); } catch (_) { toast("No se pudo generar el PDF."); } finally { this.disabled = false; } });
 $("#diaSel").addEventListener("change", e => setDia(e.target.value));
 $("#diaPrev").onclick = () => setDia(addDia(S.dia, -1));
 $("#diaNext").onclick = () => setDia(addDia(S.dia, 1));
@@ -1808,10 +2704,22 @@ $("#vqForm").addEventListener("submit", async e => {
   if (old) { body.editadoPor = myId; body.editadoEn = now; }
   $("#vqGuardar").disabled = true; $("#vqErr").textContent = "";
   try {
-    await db.doc("m/" + mesDe(fecha) + "/volquetes/" + fecha + "_" + vid).set(body);
-    delete S.fetched[mesDe(fecha) + "|volquetes"];
-    if (mesDe(fecha) !== S.mes) await ensure(mesDe(fecha), ["volquetes"]);
-    toast(vqNombre(vid) + ": " + fechaTxt(fecha) + " guardado.");
+    const mes = mesDe(fecha), docId = old ? old.id : fecha + "_" + vid, tanque = $("#vqTanque").value;
+    body.tanque = galones > 0 ? tanque : "";
+    await ensure(mes, ["diesel"]);
+    const dId = "vq_" + docId, dOld = data(mes, "diesel").find(d => d.id === dId), dRef = db.doc("m/" + mes + "/diesel/" + dId);
+    const ops = [{ ref: db.doc("m/" + mes + "/volquetes/" + docId), data: body }], aj = {};
+    if (dOld) aj[dOld.tanque] = r2(-num(dOld.delta));
+    if (galones > 0) {
+      ops.push({ ref: dRef, data: Object.assign({}, dOld ? strip(dOld) : { creadoPor: myId, creadoEn: now, orden: Date.now() }, {
+        fecha, tipo: "consumo", tanque, galones: r2(galones), delta: -r2(galones), equipo: vqNombre(vid), equipoId: vid, origen: "volquete", volqueteDoc: docId,
+        obs: body.nota || "", medido: null, proveedor: "", precioGalon: null, total: null, editadoPor: myId, editadoEn: now }) });
+      aj[tanque] = r2((aj[tanque] || 0) - r2(galones));
+    } else if (dOld) ops.push({ ref: dRef, data: null });
+    await aplicarDiesel(ops, aj);
+    delete S.fetched[mes + "|volquetes"]; delete S.fetched[mes + "|diesel"];
+    if (mes !== S.mes) await ensure(mes, ["volquetes"]);
+    toast(vqNombre(vid) + ": " + fechaTxt(fecha) + " guardado" + (galones > 0 ? " · " + nf(galones) + " gal descontados de " + tanqueNombre(tanque) : "") + ".");
     $("#vqForm").dataset.loaded = ""; if (document.activeElement) document.activeElement.blur();
     renderView();
   } catch (err) { $("#vqErr").textContent = errMsg(err); }
@@ -1820,8 +2728,15 @@ $("#vqForm").addEventListener("submit", async e => {
 $("#vqBorrar").addEventListener("click", async () => {
   const fecha = $("#vqFecha").value, vid = S.vq;
   if (!registroDe(fecha, vid)) return;
-  if (!await confirmBox("Se eliminará el registro de " + esc(vqNombre(vid)) + " del " + esc(fechaTxt(fecha)) + ".")) return;
-  try { await db.doc("m/" + mesDe(fecha) + "/volquetes/" + fecha + "_" + vid).delete(); delete S.fetched[mesDe(fecha) + "|volquetes"]; toast("Registro eliminado."); $("#vqForm").dataset.loaded = ""; renderView(); }
+  if (!await confirmBox("Se eliminará el registro de " + esc(vqNombre(vid)) + " del " + esc(fechaTxt(fecha)) + ", junto con su diésel (el galonaje vuelve al tanque).")) return;
+  try {
+    const rr = registroDe(fecha, vid), mes = mesDe(fecha); await ensure(mes, ["diesel"]);
+    const dId = "vq_" + rr.id, dOld = data(mes, "diesel").find(d => d.id === dId);
+    const ops = [{ ref: db.doc("m/" + mes + "/volquetes/" + rr.id), data: null }], aj = {};
+    if (dOld) { ops.push({ ref: db.doc("m/" + mes + "/diesel/" + dId), data: null }); aj[dOld.tanque] = r2(-num(dOld.delta)); }
+    await aplicarDiesel(ops, aj);
+    delete S.fetched[mes + "|volquetes"]; delete S.fetched[mes + "|diesel"]; toast("Registro eliminado."); $("#vqForm").dataset.loaded = ""; renderView();
+  }
   catch (err) { toast(errMsg(err)); }
 });
 $("#mesSel").addEventListener("change", e => setMes(e.target.value));
@@ -1870,11 +2785,11 @@ async function exportarRespaldo() {
   const btn = $("#bkExport"); btn.disabled = true; $("#bkMsg").textContent = "Preparando respaldo…";
   try {
     const out = { app: "planta-agregados", version: 1, exportado: new Date().toISOString(), docs: {} };
-    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios"]) {
+    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios", "tanques", "equipos", "facturas"]) {
       const s = await db.collection(col).get(); s.docs.forEach(d => { out.docs[col + "/" + d.id] = d.data(); });
     }
     let m = addMes(mesDe(hoy()), 1);
-    for (let i = 0; i < 37; i++, m = addMes(m, -1)) for (const col of ["mov", "volquetes"]) {
+    for (let i = 0; i < 37; i++, m = addMes(m, -1)) for (const col of ["mov", "volquetes", "diesel"]) {
       const s = await db.collection("m/" + m + "/" + col).get(); s.docs.forEach(d => { out.docs["m/" + m + "/" + col + "/" + d.id] = d.data(); });
     }
     await saveFile("respaldo-planta-" + hoy() + ".json", new Blob([JSON.stringify(out, null, 1)], { type: "application/json" }));
@@ -1971,7 +2886,10 @@ function escriturasSinEspera() {
     status(true);
     db.doc("config/general").onSnapshot(s => { S.config = s.exists ? s.data() : {}; fillDatalists(); renderAll(); }, () => {});
     db.collection("productos").onSnapshot(s => { S.productos = s.docs.map(x => Object.assign({ id: x.id }, x.data())); renderAll(); }, () => {});
+    db.collection("tanques").onSnapshot(s => { const o = {}; s.docs.forEach(x => { o[x.id] = x.data(); }); S.tanques = o; renderAll(); }, () => {});
+    db.collection("equipos").onSnapshot(onEquipos, () => {});
     db.collection("clientes").onSnapshot(s => { S.clientes = s.docs.map(x => Object.assign({ id: x.id }, x.data())).filter(c => c.nombre); fillDatalists(); renderAll(); }, () => {});
+    db.collection("facturas").onSnapshot(s => { S.facturas = s.docs.map(x => Object.assign({ id: x.id }, x.data())); fillDatalists(); renderAll(); if ($("#qTipo").value === "factura") calcQuick(); }, () => {});
     db.doc("contadores/ticket").onSnapshot(s => { const dd = s.exists ? (s.data() || {}) : null; S.contador = dd && Number.isFinite(dd.ultimo) ? dd : null; renderQuickMeta(); }, () => {});
     db.collection("usuarios").onSnapshot(s => { S.usuarios = s.docs.map(x => Object.assign({ email: x.id }, x.data())); renderView(); }, () => {});
     subscribeMes();
