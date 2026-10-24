@@ -10,9 +10,12 @@ service cloud.firestore {
 
     function correosDuenos() { return ['TU_CORREO@gmail.com']; }
 
-    function logueado()     { return request.auth != null && request.auth.token.email_verified == true; }
+    // Entra con Google (correo verificado) o con usuario y contraseña creado desde la app (usuario@<proyecto>.firebaseapp.com).
+    function porClave()     { return request.auth.token.firebase.sign_in_provider == 'password'; }
+    function logueado()     { return request.auth != null && (request.auth.token.email_verified == true
+                                || (porClave() && request.auth.token.email.lower().matches('.*[.]firebaseapp[.]com$'))); }
     function correo()       { return request.auth.token.email.lower(); }
-    function esDueno()      { return logueado() && correo() in correosDuenos(); }
+    function esDueno()      { return logueado() && request.auth.token.email_verified == true && correo() in correosDuenos(); }
     function registrado()   { return logueado() && exists(/databases/$(database)/documents/usuarios/$(correo())); }
     function rol()          { return get(/databases/$(database)/documents/usuarios/$(correo())).data.rol; }
     function esAdmin()      { return esDueno() || (registrado() && rol() == 'admin'); }

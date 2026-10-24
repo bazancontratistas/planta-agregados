@@ -109,6 +109,16 @@ Ventas → **Facturas y guías**.
 
 Las facturas salen en el registro del día de su fecha y en su PDF, pero **no entran al cuadre de la mesa**. El botón *Descargar PDF de guías y facturas* da el cuaderno de guías del mes.
 
+## Usuarios con contraseña (sin Gmail)
+
+Para quien no tiene cuenta de Google (por ejemplo, el despachador):
+
+1. **Una sola vez**, en Firebase → **Authentication → Método de acceso → Agregar proveedor nuevo → Correo electrónico/contraseña** → activa solo el primer interruptor → **Guardar**.
+2. En la app, **Ajustes → Usuarios**: en *Correo de Google o usuario* escribe un usuario (ej.: `julio`), ponle una **contraseña** (mínimo 6) y su permiso.
+3. Esa persona entra con **"O con usuario y contraseña"** en la pantalla de entrada.
+
+Si olvida la contraseña: quítalo en Ajustes → Usuarios, bórralo en Firebase → Authentication → Usuarios, y vuelve a crearlo.
+
 ## Despacho (pantalla del despachador)
 
 Para que el despachador (por ejemplo, Julio) vea solo lo que hay que despachar:

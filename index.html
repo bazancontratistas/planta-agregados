@@ -308,6 +308,10 @@ body:not(.admin) .needs-admin{display:none!important}
 .logincard p{margin:0;color:var(--muted)}
 #tUsu select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 8px;font-size:.88rem}
 .logincard .mark{width:44px;height:44px;border-radius:8px;background:var(--accent);display:grid;place-items:center}
+.loginform{display:grid;gap:8px;width:100%;border-top:1px solid var(--line);padding-top:14px}
+.loginform .lbl{font-size:.8rem;color:var(--muted);font-weight:600}
+.loginform input{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:8px;padding:10px 12px;font:inherit;width:100%;box-sizing:border-box}
+.loginform .formerr{min-height:0}
 </style>
 </head>
 <body>
@@ -710,10 +714,11 @@ body:not(.admin) .needs-admin{display:none!important}
       </div>
       <div class="card needs-admin" style="display:grid;gap:10px">
         <h3>Usuarios</h3>
-        <p class="note" style="margin:0">Solo entran los correos de esta lista. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF. <b>Despacho</b>: solo la lista de despacho de hoy, sin precios, de 6:30 a.m. a 5:45 p.m.</p>
+        <p class="note" style="margin:0">Solo entran los correos de esta lista. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF. Si la persona no tiene Gmail, escribe un <b>usuario</b> (ej.: julio) y una <b>contraseña</b>: entra con esos datos. <b>Despacho</b>: solo la lista de despacho de hoy, sin precios, de 6:30 a.m. a 5:45 p.m.</p>
         <div class="tablewrap"><table class="rt" id="tUsu"></table></div>
         <form id="usuForm" class="regform" novalidate autocomplete="off">
-          <div class="fld half"><label for="usuEmail">Correo de Google</label><input id="usuEmail" type="email" placeholder="nombre@gmail.com"></div>
+          <div class="fld half"><label for="usuEmail">Correo de Google o usuario</label><input id="usuEmail" placeholder="nombre@gmail.com o julio" autocapitalize="none" spellcheck="false"></div>
+          <div class="fld half"><label for="usuClave">Contraseña</label><input id="usuClave" type="text" placeholder="Solo si escribiste un usuario" autocomplete="off"><span class="hint">Mínimo 6 caracteres. Con correo de Google no hace falta.</span></div>
           <div class="fld half"><label for="usuNombre">Nombre</label><input id="usuNombre" placeholder="Luis Bazán"></div>
           <div class="fld half"><label for="usuRol">Permiso</label><select id="usuRol"><option value="editor">Registra</option><option value="lector">Solo ve</option><option value="despacho">Despacho (sin precios)</option><option value="admin">Administrador</option></select></div>
           <div class="fld half" style="align-self:end"><button class="btn primary" type="submit">Agregar usuario</button></div>
@@ -742,6 +747,13 @@ body:not(.admin) .needs-admin{display:none!important}
     <h1>Control Planta Agregados</h1>
     <p id="loginMsg">Cargando…</p>
     <button class="btn primary" id="loginBtn" hidden>Entrar con Google</button>
+    <form class="loginform" id="loginForm" novalidate hidden>
+      <span class="lbl">O con usuario y contraseña</span>
+      <input id="loginUser" placeholder="Usuario (ej.: julio)" autocomplete="username" autocapitalize="none" spellcheck="false">
+      <input id="loginPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+      <button class="btn" type="submit" id="loginEntrar">Entrar</button>
+      <div class="formerr" id="loginErr" role="alert"></div>
+    </form>
     <button class="btn" id="loginSalir" hidden>Salir y entrar con otra cuenta</button>
   </div>
 </div>
@@ -2864,21 +2876,38 @@ function renderUsuarios() {
   const t = $("#tUsu"); if (!t) return;
   const list = S.usuarios.slice().sort((a, b) => (a.nombre || a.email).localeCompare(b.nombre || b.email, "es"));
   t.innerHTML = !list.length ? `<tbody><tr><td class="empty wide">Sin usuarios.</td></tr></tbody>` :
-    `<thead><tr><th>Nombre</th><th>Correo</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => `<tr>
-      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Correo" class="wide">${esc(u.email)}</td>
+    `<thead><tr><th>Nombre</th><th>Correo o usuario</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => `<tr>
+      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Correo o usuario" class="wide">${u.usuario ? "Usuario: <b>" + esc(u.usuario) + "</b> (con contraseña)" : esc(u.email)}</td>
       <td data-l="Permiso"><select data-usurol="${esc(u.email)}" aria-label="Permiso de ${esc(u.email)}"${u.email === myId ? " disabled" : ""}>${Object.keys(ROLES).map(k => `<option value="${k}"${k === u.rol ? " selected" : ""}>${ROLES[k]}</option>`).join("")}</select></td>
       <td class="acts">${u.email === myId ? '<span class="muted" style="font-size:.84rem">Tú</span>' : `<button class="btn small ghost" data-act="usudel" data-id="${esc(u.email)}">Quitar</button>`}</td></tr>`).join("") + "</tbody>";
 }
+async function crearCuentaClave(email, clave) {
+  const app2 = firebase.initializeApp(window.FIREBASE_CONFIG, "alta-" + Date.now()); // otra sesión: el administrador no se desconecta
+  try { await app2.auth().createUserWithEmailAndPassword(email, clave); await app2.auth().signOut(); }
+  finally { try { await app2.delete(); } catch (_) {} }
+}
 async function agregarUsuario(e) {
   e.preventDefault();
-  const email = $("#usuEmail").value.trim().toLowerCase(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value;
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $("#usuErr").textContent = "Escribe un correo válido (el de su cuenta de Google)."; return; }
-  if (S.usuarios.some(u => u.email === email)) { $("#usuErr").textContent = "Ese correo ya tiene acceso. Cambia su permiso en la tabla."; return; }
+  const err = t => { $("#usuErr").textContent = t; };
+  const ent = $("#usuEmail").value.trim().toLowerCase(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value, clave = $("#usuClave").value;
+  const conClave = ent && !ent.includes("@");
+  if (conClave && !/^[a-z0-9._-]{3,30}$/.test(ent)) return err("El usuario va sin espacios ni tildes, de 3 a 30 letras o números (ej.: julio).");
+  if (!conClave && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ent)) return err("Escribe un correo de Google válido, o un usuario (ej.: julio).");
+  if (conClave && clave.length < 6) return err("La contraseña debe tener al menos 6 caracteres.");
+  const email = correoDeUsuario(ent);
+  if (S.usuarios.some(u => u.email === email)) return err("Ese " + (conClave ? "usuario" : "correo") + " ya tiene acceso. Cambia su permiso en la tabla.");
+  $("#usuForm button[type=submit]").disabled = true; err("");
   try {
-    await db.doc("usuarios/" + email).set({ email, nombre: nombre || email.split("@")[0], rol, creadoPor: myId, creadoEn: new Date().toISOString() });
-    $("#usuEmail").value = ""; $("#usuNombre").value = ""; $("#usuErr").textContent = "";
-    toast(email + " ya puede entrar.");
-  } catch (er) { $("#usuErr").textContent = errMsg(er); }
+    if (conClave) await crearCuentaClave(email, clave);
+    await db.doc("usuarios/" + email).set(Object.assign({ email, nombre: nombre || ent.split("@")[0], rol, creadoPor: myId, creadoEn: new Date().toISOString() }, conClave ? { usuario: ent } : {}));
+    ["#usuEmail", "#usuNombre", "#usuClave"].forEach(id => { $(id).value = ""; });
+    toast(conClave ? "Listo: " + ent + " ya puede entrar con su contraseña." : email + " ya puede entrar.");
+  } catch (er) {
+    const c = er && er.code;
+    err(c === "auth/email-already-in-use" ? "Ese usuario ya existe en Firebase. Usa otro nombre (ej.: " + ent + "2) o bórralo en Firebase → Authentication."
+      : c === "auth/operation-not-allowed" || c === "auth/admin-restricted-operation" ? "Falta activar “Correo electrónico/contraseña” en Firebase → Authentication (mira el README)."
+      : c === "auth/weak-password" ? "La contraseña es muy débil: usa al menos 6 caracteres." : errMsg(er));
+  } finally { $("#usuForm button[type=submit]").disabled = false; }
 }
 /* ===== RESPALDO ===== */
 async function exportarRespaldo() {
@@ -2919,13 +2948,17 @@ go(start, false);
 
 function mostrarLogin(modo, correo) {
   $("#loginView").hidden = false;
-  $("#loginBtn").hidden = modo !== "entrar";
+  $("#loginBtn").hidden = modo !== "entrar"; $("#loginForm").hidden = modo !== "entrar";
   $("#loginSalir").hidden = modo !== "sinacceso";
   $("#loginMsg").innerHTML = modo === "config" ? "Falta configurar Firebase. Copia los datos de tu proyecto en <b>firebase-config.js</b> (mira el README)."
-    : modo === "sinacceso" ? `El correo <b>${esc(correo)}</b> no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
+    : modo === "sinacceso" ? `<b>${esc(usuarioTxt(correo))}</b> no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
     : modo === "error" ? "No se pudo conectar. Revisa tu internet y recarga la página."
     : "Entra con tu cuenta de Google.";
 }
+/* Usuarios con contraseña: "julio" se guarda como julio@<proyecto>.firebaseapp.com (nadie recibe correos ahí) */
+const DOM_CLAVE = () => String((window.FIREBASE_CONFIG || {}).authDomain || "usuarios.firebaseapp.com").toLowerCase();
+const correoDeUsuario = u => { u = String(u || "").trim().toLowerCase(); return u.includes("@") ? u : u + "@" + DOM_CLAVE(); };
+const usuarioTxt = e => { e = String(e || ""); return e.endsWith("@" + DOM_CLAVE()) ? e.slice(0, -DOM_CLAVE().length - 1) : e; };
 /* Con internet lento, no hace esperar a la persona: Firebase guarda en el equipo y sube solo. */
 function escriturasSinEspera() {
   const DR = firebase.firestore.DocumentReference.prototype;
@@ -2953,6 +2986,19 @@ function escriturasSinEspera() {
       else if (e && e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") $("#loginMsg").textContent = "No se pudo entrar (" + (e.code || "error") + "). Si el error dice unauthorized-domain, revisa el paso 4 del README.";
     }
   };
+  $("#loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const u = $("#loginUser").value.trim(), pw = $("#loginPass").value, err = $("#loginErr");
+    if (!u || !pw) { err.textContent = "Escribe tu usuario y tu contraseña."; return; }
+    err.textContent = ""; $("#loginEntrar").disabled = true;
+    try { await auth.signInWithEmailAndPassword(correoDeUsuario(u), pw); }
+    catch (er) {
+      const c = er && er.code;
+      err.textContent = c === "auth/operation-not-allowed" ? "Falta activar el acceso con contraseña en Firebase (mira el README)."
+        : c === "auth/too-many-requests" ? "Demasiados intentos. Espera unos minutos e inténtalo otra vez."
+        : c === "auth/network-request-failed" ? "Sin internet. Revisa la conexión." : "Usuario o contraseña incorrectos.";
+    } finally { $("#loginEntrar").disabled = false; }
+  });
   const salir = () => auth.signOut().then(() => location.reload());
   $("#logoutBtn").onclick = salir; $("#loginSalir").onclick = salir;
   window.addEventListener("offline", () => { $("#dbTxt").textContent = "Sin internet"; $("#dbDot").className = "dot err"; });
