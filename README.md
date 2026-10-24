@@ -35,7 +35,8 @@ Funciona en computadora y celular. Los datos se guardan en Firebase (Google) y l
 
 1. **Compilación → Authentication → Comenzar**.
 2. Pestaña **Método de acceso** → **Google** → **Habilitar** → elige tu correo de soporte → **Guardar**.
-3. Pestaña **Configuración → Dominios autorizados → Agregar dominio** → escribe `TU_USUARIO.github.io` (tu usuario de GitHub, en minúsculas).
+3. En la misma pestaña, **Agregar proveedor nuevo → Correo electrónico/contraseña** → activa solo el primer interruptor (**no** el de "vínculo por correo") → **Guardar**. Sirve para que los trabajadores entren con usuario y contraseña, sin correo.
+4. Pestaña **Configuración → Dominios autorizados → Agregar dominio** → escribe `TU_USUARIO.github.io` (tu usuario de GitHub, en minúsculas).
 
 ## Paso 5. Poner las reglas de seguridad (muy importante)
 
@@ -58,7 +59,7 @@ Con esto, nadie puede ver ni tocar los datos salvo los correos que tú autorices
 ## Paso 7. Primer ingreso
 
 1. Abre el enlace y toca **Entrar con Google** con el correo del dueño. Entras como **Administrador**.
-2. **Ajustes (⚙) → Usuarios**: agrega a Luis y a los trabajadores con su correo de Google y su permiso:
+2. **Ajustes (⚙) → Usuarios**: agrega a los trabajadores con un **usuario** (por ejemplo `julio`, sin espacios), su **nombre**, una **contraseña inicial** (por ejemplo su DNI) y su permiso. La primera vez que entren, la app les pedirá crear su propia contraseña. Si alguien la olvida: botón **Nueva clave**. Si un trabajador tiene Gmail y prefiere entrar con Google, escribe su correo en lugar del usuario. Permisos:
    - **Administrador**: todo, incluidos precios, usuarios y respaldo.
    - **Registra**: tickets, gastos, sencillo, cierres y volquetes.
    - **Solo ve**: consulta y descarga PDF.

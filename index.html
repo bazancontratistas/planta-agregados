@@ -298,6 +298,11 @@ body:not(.admin) .needs-admin{display:none!important}
 .logincard p{margin:0;color:var(--muted)}
 #tUsu select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 8px;font-size:.88rem}
 .logincard .mark{width:44px;height:44px;border-radius:8px;background:var(--accent);display:grid;place-items:center}
+.loginform{display:grid;gap:10px;width:100%}
+.loginform .btn{justify-self:start}
+.loginsep{display:flex;align-items:center;gap:10px;width:100%;color:var(--muted);font-size:.82rem}
+.loginsep::before,.loginsep::after{content:"";flex:1;border-top:1px solid var(--line)}
+.loginerr{color:var(--bad);font-size:.88rem;min-height:1em}
 </style>
 </head>
 <body>
@@ -689,13 +694,14 @@ body:not(.admin) .needs-admin{display:none!important}
         </form>
         <p class="hintline" style="margin:0">Solo cámbialo para empezar o si el talonario físico se adelantó. El siguiente ticket será este número + 1.</p>
       </div>
-      <div class="card needs-admin" style="display:grid;gap:10px">
+      <div class="card needs-admin" style="display:grid;gap:10px;grid-column:1/-1">
         <h3>Usuarios</h3>
-        <p class="note" style="margin:0">Solo entran los correos de esta lista. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF.</p>
+        <p class="note" style="margin:0">Solo entran las personas de esta lista. Los trabajadores entran con <b>usuario y contraseña</b> (no necesitan correo); los dueños, con Google. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF.</p>
         <div class="tablewrap"><table class="rt" id="tUsu"></table></div>
         <form id="usuForm" class="regform" novalidate autocomplete="off">
-          <div class="fld half"><label for="usuEmail">Correo de Google</label><input id="usuEmail" type="email" placeholder="nombre@gmail.com"></div>
-          <div class="fld half"><label for="usuNombre">Nombre</label><input id="usuNombre" placeholder="Luis Bazán"></div>
+          <div class="fld half"><label for="usuEmail">Usuario</label><input id="usuEmail" autocapitalize="none" spellcheck="false" placeholder="julio"><span class="hint">Sin espacios. Si entra con Google, escribe su correo.</span></div>
+          <div class="fld half"><label for="usuNombre">Nombre completo</label><input id="usuNombre" placeholder="Julio Pérez"></div>
+          <div class="fld half"><label for="usuClave">Contraseña inicial (DNI)</label><input id="usuClave" autocomplete="off" placeholder="DNI"><span class="hint">Al entrar por primera vez, se le pedirá cambiarla.</span></div>
           <div class="fld half"><label for="usuRol">Permiso</label><select id="usuRol"><option value="editor">Registra</option><option value="lector">Solo ve</option><option value="admin">Administrador</option></select></div>
           <div class="fld half" style="align-self:end"><button class="btn primary" type="submit">Agregar usuario</button></div>
           <div class="formerr" id="usuErr"></div>
@@ -722,7 +728,20 @@ body:not(.admin) .needs-admin{display:none!important}
     <span class="mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 26 26"><path d="M3 17h13l2-6h4l2 3v3H3z" fill="#16202a"/><path d="M5 11l3-5h7l1 5z" fill="#16202a" opacity=".75"/><circle cx="7.5" cy="19.5" r="2.5" fill="#16202a"/><circle cx="19.5" cy="19.5" r="2.5" fill="#16202a"/></svg></span>
     <h1>Control Planta Agregados</h1>
     <p id="loginMsg">Cargando…</p>
-    <button class="btn primary" id="loginBtn" hidden>Entrar con Google</button>
+    <form class="loginform" id="loginForm" novalidate hidden>
+      <div class="fld"><label for="loginUser">Usuario</label><input id="loginUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="julio"></div>
+      <div class="fld"><label for="loginPass">Contraseña</label><input id="loginPass" type="password" autocomplete="current-password"></div>
+      <button class="btn primary" type="submit" id="loginEntrar">Entrar</button>
+      <div class="loginerr" id="loginErr" role="alert"></div>
+    </form>
+    <div class="loginsep" id="loginSep" hidden>o</div>
+    <button class="btn" id="loginBtn" hidden>Entrar con Google (dueños)</button>
+    <form class="loginform" id="claveForm" novalidate hidden>
+      <div class="fld"><label for="claveNueva">Nueva contraseña</label><input id="claveNueva" type="password" autocomplete="new-password"><span class="hint">Mínimo 6 caracteres. Solo tú debes saberla.</span></div>
+      <div class="fld"><label for="claveRep">Repite la nueva contraseña</label><input id="claveRep" type="password" autocomplete="new-password"></div>
+      <button class="btn primary" type="submit" id="claveGuardar">Guardar y entrar</button>
+      <div class="loginerr" id="claveErr" role="alert"></div>
+    </form>
     <button class="btn" id="loginSalir" hidden>Salir y entrar con otra cuenta</button>
   </div>
 </div>
@@ -1013,6 +1032,11 @@ const COLS = ["mov", "volquetes", "diesel"];
 /* ---------- state ---------- */
 let db = null, writable = true, myId = null;
 const ROLES = { admin: "Administrador", editor: "Registra", lector: "Solo ve" };
+/* Usuarios sin correo: por dentro se guardan como usuario@<authDomain>, una dirección que no recibe correos. */
+const DOM_INT = String((window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.authDomain) || "planta.local").toLowerCase();
+const esInterno = em => String(em || "").toLowerCase().endsWith("@" + DOM_INT);
+const usuarioDe = u => (u && u.usuario) || String((u && u.email) || u || "").split("@")[0].replace(/\.\d+$/, "");
+function normUsuario(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, ".").replace(/[^a-z0-9._-]/g, "").replace(/\.{2,}/g, ".").replace(/^[._-]+|[._-]+$/g, ""); }
 const S = { mes: mesDe(hoy()), dia: hoy(), cache: {}, live: {}, fetched: {}, config: {}, view: "inicio", vq: VOLQUETES[0].id, diasMes: [], productos: [], clientes: [], equipos: [], equiposCargados: false, eqFiltro: "todos", tanques: {}, dFiltro: "todos", dFEq: "todos", dFMov: "todos", facturas: [], faSeg: "pend", faOpen: new Set(), contador: undefined, usuarios: [], rol: "", inputsDia: null, dirtyIni: false, dirtyFin: false };
 const unsubs = [], charts = {};
 
@@ -1065,7 +1089,7 @@ function errMsg(e) {
 function nombreDe(id) {
   if (!id) return "";
   const u = S.usuarios.find(x => x.email === id);
-  return u ? (u.nombre || u.email.split("@")[0]) : (String(id).includes("@") ? String(id).split("@")[0] : "un usuario");
+  return u ? (u.nombre || usuarioDe(u)) : (String(id).includes("@") ? usuarioDe(String(id)) : "un usuario");
 }
 function resolveNames() {
   $$("[data-uid]").forEach(e => { const n = nombreDe(e.dataset.uid); e.textContent = n ? (e.dataset.pre ?? "por ") + n : ""; });
@@ -2649,8 +2673,25 @@ document.addEventListener("click", async e => {
     try { await db.doc("equipos/" + q.id).update({ activo: q.activo === false }); toast(q.nombre + (q.activo === false ? " reactivado." : " dado de baja.")); } catch (er) { toast(errMsg(er)); }
   }
   else if (act === "usudel") {
-    if (!await confirmBox("Se quitará el acceso de " + esc(id) + ". Sus registros se conservan.", "Quitar acceso")) return;
-    try { await db.doc("usuarios/" + id).delete(); toast("Acceso quitado."); } catch (er) { toast(errMsg(er)); }
+    const x = S.usuarios.find(u => u.email === id), quien = esInterno(id) ? usuarioDe(x || id) : id;
+    if (!await confirmBox("Se quitará el acceso de <b>" + esc(quien) + "</b>. Sus registros se conservan.", "Quitar acceso")) return;
+    try {
+      await db.doc("usuarios/" + id).delete();
+      if (esInterno(id)) { const a = db.doc("alias/" + usuarioDe(x || id)); const s = await a.get().catch(() => null); if (s && s.exists && s.data().email === id) await a.delete().catch(() => {}); }
+      toast("Acceso quitado.");
+    } catch (er) { toast(errMsg(er)); }
+  }
+  else if (act === "usureset") {
+    const old = S.usuarios.find(u => u.email === id); if (!old) return;
+    const u = usuarioDe(old), clave = await pedirClave(u); if (!clave) return;
+    try {
+      const email = await crearCuenta(u, clave), now = new Date().toISOString(), b = db.batch();
+      b.set(db.doc("usuarios/" + email), Object.assign({}, strip(old), { email, usuario: u, tipo: "usuario", debeCambiar: true, restablecidoPor: myId, restablecidoEn: now }));
+      b.delete(db.doc("usuarios/" + old.email));
+      b.set(db.doc("alias/" + u), { email });
+      await b.commit();
+      toast("Contraseña de " + u + " restablecida. Al entrar se le pedirá cambiarla.");
+    } catch (er) { toast(errAuth(er)); }
   }
   else if (act === "vqedit") { $("#vqFecha").value = b.dataset.fecha; await cargarRegistro(true); $("#vqForm").scrollIntoView({ behavior: "smooth", block: "center" }); $("#vqViajes").focus(); }
 });
@@ -2764,28 +2805,87 @@ function renderUsuarios() {
   const t = $("#tUsu"); if (!t) return;
   const list = S.usuarios.slice().sort((a, b) => (a.nombre || a.email).localeCompare(b.nombre || b.email, "es"));
   t.innerHTML = !list.length ? `<tbody><tr><td class="empty wide">Sin usuarios.</td></tr></tbody>` :
-    `<thead><tr><th>Nombre</th><th>Correo</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => `<tr>
-      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Correo" class="wide">${esc(u.email)}</td>
-      <td data-l="Permiso"><select data-usurol="${esc(u.email)}" aria-label="Permiso de ${esc(u.email)}"${u.email === myId ? " disabled" : ""}>${Object.keys(ROLES).map(k => `<option value="${k}"${k === u.rol ? " selected" : ""}>${ROLES[k]}</option>`).join("")}</select></td>
-      <td class="acts">${u.email === myId ? '<span class="muted" style="font-size:.84rem">Tú</span>' : `<button class="btn small ghost" data-act="usudel" data-id="${esc(u.email)}">Quitar</button>`}</td></tr>`).join("") + "</tbody>";
+    `<thead><tr><th>Nombre</th><th>Usuario / correo</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => {
+      const int = esInterno(u.email), yo = u.email === myId;
+      const ident = int ? `<b>${esc(usuarioDe(u))}</b><br><span class="muted" style="font-size:.8rem">${u.debeCambiar ? "Falta que cambie su clave" : "Usuario y contraseña"}</span>` : `${esc(u.email)}<br><span class="muted" style="font-size:.8rem">Google</span>`;
+      const acts = yo ? '<span class="muted" style="font-size:.84rem">Tú</span>' : `<div style="display:grid;gap:4px;justify-items:end">${int ? `<button class="btn small" data-act="usureset" data-id="${esc(u.email)}">Nueva clave</button>` : ""}<button class="btn small ghost" data-act="usudel" data-id="${esc(u.email)}">Quitar</button></div>`;
+      return `<tr>
+      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Usuario / correo" class="wide">${ident}</td>
+      <td data-l="Permiso"><select data-usurol="${esc(u.email)}" aria-label="Permiso de ${esc(u.nombre || u.email)}"${yo ? " disabled" : ""}>${Object.keys(ROLES).map(k => `<option value="${k}"${k === u.rol ? " selected" : ""}>${ROLES[k]}</option>`).join("")}</select></td>
+      <td class="acts">${acts}</td></tr>`;
+    }).join("") + "</tbody>";
+}
+function errAuth(e) {
+  const c = (e && e.code) || "";
+  if (c === "auth/operation-not-allowed") return "Falta activar en Firebase el acceso con Correo electrónico/contraseña (Authentication → Método de acceso).";
+  if (c === "auth/weak-password") return "La contraseña es muy corta: mínimo 6 caracteres.";
+  if (c === "auth/network-request-failed") return "Sin internet. Inténtalo cuando vuelva la señal.";
+  if (c === "auth/too-many-requests") return "Demasiados intentos seguidos. Espera unos minutos y vuelve a intentarlo.";
+  if (["auth/wrong-password", "auth/user-not-found", "auth/invalid-credential", "auth/invalid-login-credentials", "auth/invalid-email", "auth/user-disabled"].includes(c)) return "Usuario o contraseña incorrectos.";
+  if (c === "auth/requires-recent-login") return "Por seguridad, sal y vuelve a entrar antes de cambiar la contraseña.";
+  if (c === "auth/email-already-in-use") return "No se pudo crear ese usuario. Prueba con otro nombre de usuario.";
+  return errMsg(e) || ("No se pudo completar (" + (c || "error") + ").");
+}
+/* Crea la cuenta con una segunda conexión, para no cerrar la sesión del administrador. */
+async function crearCuenta(u, clave) {
+  const app2 = firebase.apps.find(a => a.name === "altas") || firebase.initializeApp(window.FIREBASE_CONFIG, "altas");
+  const a2 = app2.auth();
+  try { await a2.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch (_) {}
+  for (let i = 1; i <= 20; i++) {
+    const email = (i === 1 ? u : u + "." + i) + "@" + DOM_INT;
+    try { await a2.createUserWithEmailAndPassword(email, clave); await a2.signOut().catch(() => {}); return email; }
+    catch (e) { if (!(e && e.code === "auth/email-already-in-use")) throw e; }
+  }
+  throw { code: "auth/email-already-in-use" };
+}
+function pedirClave(u) {
+  return new Promise(res => {
+    const close = modal(`<header><h3>Restablecer contraseña</h3></header><div class="body"><form id="rcForm" class="regform" novalidate autocomplete="off">
+      <p class="note" style="grid-column:1/-1;margin:0">Nueva contraseña inicial para <b>${esc(u)}</b> (por ejemplo, su DNI). Al entrar, se le pedirá cambiarla por una propia.</p>
+      ${fld("rcClave", "Contraseña inicial", "", { ph: "DNI" })}<div class="formerr" id="rcErr"></div>
+      <div class="foot" style="grid-column:1/-1"><button type="button" class="btn" id="rcNo">Cancelar</button><button class="btn primary" type="submit">Restablecer</button></div></form></div>`);
+    const done = v => { close(); res(v); };
+    $("#rcNo").onclick = () => done(null);
+    $("#rcForm").onsubmit = ev => { ev.preventDefault(); const v = $("#rcClave").value.trim(); if (v.length < 6) { $("#rcErr").textContent = "Mínimo 6 caracteres."; return; } done(v); };
+    $("#rcClave").focus();
+  });
 }
 async function agregarUsuario(e) {
   e.preventDefault();
-  const email = $("#usuEmail").value.trim().toLowerCase(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value;
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $("#usuErr").textContent = "Escribe un correo válido (el de su cuenta de Google)."; return; }
-  if (S.usuarios.some(u => u.email === email)) { $("#usuErr").textContent = "Ese correo ya tiene acceso. Cambia su permiso en la tabla."; return; }
+  const raw = $("#usuEmail").value.trim(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value, clave = $("#usuClave").value.trim(), err = $("#usuErr");
+  const limpiar = () => { $("#usuEmail").value = ""; $("#usuNombre").value = ""; $("#usuClave").value = ""; err.textContent = ""; };
+  err.textContent = "";
+  if (raw.includes("@")) {
+    const email = raw.toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Ese correo no es válido."; return; }
+    if (esInterno(email)) { err.textContent = "Escribe solo el usuario, sin @."; return; }
+    if (S.usuarios.some(u => u.email === email)) { err.textContent = "Ese correo ya tiene acceso. Cambia su permiso en la tabla."; return; }
+    try {
+      await db.doc("usuarios/" + email).set({ email, nombre: nombre || email.split("@")[0], rol, tipo: "google", creadoPor: myId, creadoEn: new Date().toISOString() });
+      limpiar(); toast(email + " ya puede entrar con Google.");
+    } catch (er) { err.textContent = errMsg(er); }
+    return;
+  }
+  const u = normUsuario(raw);
+  if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(u)) { err.textContent = "Escribe un usuario de 3 a 30 letras o números, sin espacios (por ejemplo: julio o julio.perez)."; return; }
+  if (S.usuarios.some(x => esInterno(x.email) && usuarioDe(x) === u)) { err.textContent = "Ya existe el usuario " + u + ". Usa otro, por ejemplo " + u + ".perez."; return; }
+  if (clave.length < 6) { err.textContent = "Escribe la contraseña inicial (su DNI), de al menos 6 caracteres."; return; }
+  const btn = $("#usuForm button[type=submit]"); btn.disabled = true;
   try {
-    await db.doc("usuarios/" + email).set({ email, nombre: nombre || email.split("@")[0], rol, creadoPor: myId, creadoEn: new Date().toISOString() });
-    $("#usuEmail").value = ""; $("#usuNombre").value = ""; $("#usuErr").textContent = "";
-    toast(email + " ya puede entrar.");
-  } catch (er) { $("#usuErr").textContent = errMsg(er); }
+    const email = await crearCuenta(u, clave), b = db.batch();
+    b.set(db.doc("usuarios/" + email), { email, usuario: u, nombre: nombre || u, rol, tipo: "usuario", debeCambiar: true, creadoPor: myId, creadoEn: new Date().toISOString() });
+    b.set(db.doc("alias/" + u), { email });
+    await b.commit();
+    limpiar(); toast("Listo: " + u + " ya puede entrar con su contraseña inicial.");
+  } catch (er) { err.textContent = errAuth(er); }
+  finally { btn.disabled = false; }
 }
 /* ===== RESPALDO ===== */
 async function exportarRespaldo() {
   const btn = $("#bkExport"); btn.disabled = true; $("#bkMsg").textContent = "Preparando respaldo…";
   try {
     const out = { app: "planta-agregados", version: 1, exportado: new Date().toISOString(), docs: {} };
-    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios", "tanques", "equipos", "facturas"]) {
+    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios", "alias", "tanques", "equipos", "facturas"]) {
       const s = await db.collection(col).get(); s.docs.forEach(d => { out.docs[col + "/" + d.id] = d.data(); });
     }
     let m = addMes(mesDe(hoy()), 1);
@@ -2819,12 +2919,15 @@ go(start, false);
 
 function mostrarLogin(modo, correo) {
   $("#loginView").hidden = false;
-  $("#loginBtn").hidden = modo !== "entrar";
+  const entrar = modo === "entrar";
+  $("#loginBtn").hidden = !entrar; $("#loginSep").hidden = !entrar; $("#loginForm").hidden = !entrar; $("#claveForm").hidden = true;
   $("#loginSalir").hidden = modo !== "sinacceso";
+  const quien = esInterno(correo) ? `El usuario <b>${esc(usuarioDe(correo))}</b>` : `El correo <b>${esc(correo)}</b>`;
   $("#loginMsg").innerHTML = modo === "config" ? "Falta configurar Firebase. Copia los datos de tu proyecto en <b>firebase-config.js</b> (mira el README)."
-    : modo === "sinacceso" ? `El correo <b>${esc(correo)}</b> no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
+    : modo === "sinacceso" ? `${quien} no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
     : modo === "error" ? "No se pudo conectar. Revisa tu internet y recarga la página."
-    : "Entra con tu cuenta de Google.";
+    : "Entra con tu usuario y contraseña.";
+  if (entrar) setTimeout(() => { if (!$("#loginForm").hidden) $("#loginUser").focus(); }, 0);
 }
 /* Con internet lento, no hace esperar a la persona: Firebase guarda en el equipo y sube solo. */
 function escriturasSinEspera() {
@@ -2855,6 +2958,43 @@ function escriturasSinEspera() {
   };
   const salir = () => auth.signOut().then(() => location.reload());
   $("#logoutBtn").onclick = salir; $("#loginSalir").onclick = salir;
+  let claveLogin = "";
+  $("#loginForm").onsubmit = async ev => {
+    ev.preventDefault();
+    const u = normUsuario($("#loginUser").value), pass = $("#loginPass").value, er = $("#loginErr");
+    er.textContent = "";
+    if (!u || !pass) { er.textContent = "Escribe tu usuario y tu contraseña."; return; }
+    $("#loginEntrar").disabled = true;
+    try {
+      let email = u + "@" + DOM_INT;
+      try { const s = await fs.doc("alias/" + u).get(); if (s.exists && s.data().email) email = s.data().email; } catch (_) {}
+      claveLogin = pass;
+      await auth.signInWithEmailAndPassword(email, pass);
+    } catch (e) { er.textContent = errAuth(e); }
+    finally { $("#loginEntrar").disabled = false; }
+  };
+  const pedirCambio = (u, perfil) => {
+    $("#loginView").hidden = false;
+    ["#loginBtn", "#loginSep", "#loginForm"].forEach(s => { $(s).hidden = true; });
+    $("#claveForm").hidden = false; $("#loginSalir").hidden = false;
+    $("#loginMsg").innerHTML = `Hola <b>${esc(perfil.nombre || usuarioDe(perfil))}</b>. Antes de empezar, crea una contraseña nueva que solo tú sepas.`;
+    $("#claveNueva").focus();
+    $("#claveForm").onsubmit = async ev => {
+      ev.preventDefault();
+      const a = $("#claveNueva").value, b = $("#claveRep").value, er = $("#claveErr"); er.textContent = "";
+      if (a.length < 6) { er.textContent = "Mínimo 6 caracteres."; return; }
+      if (a !== b) { er.textContent = "Las dos contraseñas no coinciden."; return; }
+      if (claveLogin && a === claveLogin) { er.textContent = "Debe ser distinta a tu contraseña inicial (tu DNI)."; return; }
+      $("#claveGuardar").disabled = true;
+      try {
+        await u.updatePassword(a);
+        await fs.doc("usuarios/" + myId).update({ debeCambiar: false, claveCambiadaEn: new Date().toISOString() });
+        claveLogin = ""; $("#claveForm").hidden = true; $("#loginSalir").hidden = true;
+        iniciar(Object.assign({}, perfil, { debeCambiar: false }));
+      } catch (e) { er.textContent = errAuth(e); }
+      finally { $("#claveGuardar").disabled = false; }
+    };
+  };
   window.addEventListener("offline", () => { $("#dbTxt").textContent = "Sin internet"; $("#dbDot").className = "dot err"; });
   window.addEventListener("online", () => status(true));
   let iniciado = false;
@@ -2873,11 +3013,16 @@ function escriturasSinEspera() {
       }
     } catch (e) { if (!(e && e.code === "permission-denied")) { mostrarLogin("error"); return; } }
     if (!perfil || !ROLES[perfil.rol]) { mostrarLogin("sinacceso", myId); return; }
+    if (perfil.debeCambiar && esInterno(myId)) { pedirCambio(u, perfil); return; }
+    iniciar(perfil);
+  });
+  function iniciar(perfil) {
+    if (iniciado) return;
     iniciado = true;
     escriturasSinEspera();
     db = fs; S.rol = perfil.rol;
     $("#loginView").hidden = true;
-    $("#userChip").textContent = (perfil.nombre || myId) + " · " + ROLES[perfil.rol];
+    $("#userChip").textContent = (perfil.nombre || usuarioDe(perfil)) + " · " + ROLES[perfil.rol];
     document.body.classList.toggle("admin", perfil.rol === "admin");
     if (perfil.rol === "lector") {
       writable = false; document.body.classList.add("readonly");
@@ -2893,7 +3038,7 @@ function escriturasSinEspera() {
     db.doc("contadores/ticket").onSnapshot(s => { const dd = s.exists ? (s.data() || {}) : null; S.contador = dd && Number.isFinite(dd.ultimo) ? dd : null; renderQuickMeta(); }, () => {});
     db.collection("usuarios").onSnapshot(s => { S.usuarios = s.docs.map(x => Object.assign({ email: x.id }, x.data())); renderView(); }, () => {});
     subscribeMes();
-  });
+  }
 })();
 })();
 </script>

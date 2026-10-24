@@ -1,18 +1,23 @@
 rules_version = '2';
 
 // Reglas de seguridad de la app Control Planta Agregados.
-// IMPORTANTE: antes de publicarlas en Firebase, pon en correosDuenos() los
-// correos de Google de los dueños, en minúsculas (paso 5 del README).
-// No subas a GitHub este archivo con los correos reales.
+// Copia de referencia. Antes de publicarlas en Firebase, pon en correosDuenos()
+// los correos de Google de los dueños, en minúsculas. No subas a GitHub los correos reales.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function correosDuenos() { return ['TU_CORREO@gmail.com']; }
 
-    function logueado()     { return request.auth != null && request.auth.token.email_verified == true; }
+    // Trabajadores sin correo: entran con usuario y contraseña. Por dentro su cuenta es
+    // usuario@planta-agregados.firebaseapp.com (una dirección que no recibe correos).
+    function interno()      { return request.auth != null
+                                && request.auth.token.firebase.sign_in_provider == 'password'
+                                && request.auth.token.email.lower().matches('^[a-z0-9._-]+@planta-agregados[.]firebaseapp[.]com$'); }
+
+    function logueado()     { return request.auth != null && (request.auth.token.email_verified == true || interno()); }
     function correo()       { return request.auth.token.email.lower(); }
-    function esDueno()      { return logueado() && correo() in correosDuenos(); }
+    function esDueno()      { return logueado() && !interno() && correo() in correosDuenos(); }
     function registrado()   { return logueado() && exists(/databases/$(database)/documents/usuarios/$(correo())); }
     function rol()          { return get(/databases/$(database)/documents/usuarios/$(correo())).data.rol; }
     function esAdmin()      { return esDueno() || (registrado() && rol() == 'admin'); }
@@ -20,9 +25,19 @@ service cloud.firestore {
     function puedeLeer()    { return esAdmin() || (registrado() && rol() in ['editor', 'lector']); }
 
     // Quién puede entrar y con qué permiso: solo administradores lo cambian.
+    // Cada trabajador solo puede marcar que ya cambió su contraseña.
     match /usuarios/{email} {
       allow read: if puedeLeer() || (logueado() && email == correo());
-      allow write: if esAdmin();
+      allow create, delete: if esAdmin();
+      allow update: if esAdmin() || (registrado() && email == correo()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['debeCambiar', 'claveCambiadaEn'])
+        && request.resource.data.debeCambiar == false);
+    }
+
+    // Usuario -> cuenta interna. Se consulta en la pantalla de inicio, antes de entrar.
+    match /alias/{u} {
+      allow get: if true;
+      allow list, write: if esAdmin();
     }
 
     // Precios y datos de la empresa: solo administradores.
@@ -55,7 +70,7 @@ service cloud.firestore {
     // Registro diario de volquetes.
     match /m/{mes}/volquetes/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
 
-    // Diésel: saldo de tanques, lista de equipos y movimientos (compras, consumos, ajustes).
+    // Diésel: saldo de tanques, lista de equipos y movimientos.
     match /tanques/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
     match /equipos/{id} {
       allow read: if puedeLeer();
