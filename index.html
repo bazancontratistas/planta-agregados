@@ -100,6 +100,14 @@ tr.fdet>td{background:var(--surface-2)}
 .glist .g .btn{margin-left:auto}
 .estados{display:flex;flex-wrap:wrap;gap:4px}
 #qFacList{min-width:min(360px,calc(100vw - 48px))}
+tr.dpend>td{background:var(--bad-soft)} tr.dok>td{background:var(--good-soft)}
+tr.dpend>td:first-child{box-shadow:inset 4px 0 0 var(--bad)} tr.dok>td:first-child{box-shadow:inset 4px 0 0 var(--good)}
+.dstate{display:block;font-size:.78rem;font-weight:700;margin-top:3px}
+.dstate.ok{color:var(--good)} .dstate.pend{color:var(--bad)}
+.dbtn{min-height:44px;padding:8px 18px;font-weight:700}
+#tDesp td{font-size:1.02rem}
+body.rol-despacho .monthpick,body.rol-despacho [data-go="ajustes"],body.rol-despacho #crumbs,body.rol-despacho #ventasSeg,body.rol-despacho #ventasHead{display:none!important}
+body.rol-despacho .brand{pointer-events:none}
 .notice{border-radius:8px;padding:10px 14px;background:var(--warn-soft);color:var(--fg);border:1px solid var(--line)}
 .notice b{color:var(--warn)}
 .muted{color:var(--muted)}
@@ -169,6 +177,8 @@ tr.anul td.num{text-decoration:line-through}
   .rt td.acts{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   .rt td.acts::before{display:none}
   .rt tr.fpend{border-left:4px solid var(--bad)} .rt tr.fok{border-left:4px solid var(--good)}
+  .rt tr.dpend{background:var(--bad-soft);border-left:4px solid var(--bad)} .rt tr.dok{background:var(--good-soft);border-left:4px solid var(--good)}
+  tr.dpend>td:first-child,tr.dok>td:first-child{box-shadow:none}
   tr.fpend>td:first-child,tr.fok>td:first-child{box-shadow:none}
   .rt tfoot tr{background:var(--surface-2);border-top:3px double var(--line)}
   .phead h2{font-size:1.5rem}
@@ -298,11 +308,6 @@ body:not(.admin) .needs-admin{display:none!important}
 .logincard p{margin:0;color:var(--muted)}
 #tUsu select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 8px;font-size:.88rem}
 .logincard .mark{width:44px;height:44px;border-radius:8px;background:var(--accent);display:grid;place-items:center}
-.loginform{display:grid;gap:10px;width:100%}
-.loginform .btn{justify-self:start}
-.loginsep{display:flex;align-items:center;gap:10px;width:100%;color:var(--muted);font-size:.82rem}
-.loginsep::before,.loginsep::after{content:"";flex:1;border-top:1px solid var(--line)}
-.loginerr{color:var(--bad);font-size:.88rem;min-height:1em}
 </style>
 </head>
 <body>
@@ -361,12 +366,13 @@ body:not(.admin) .needs-admin{display:none!important}
 
   <!-- MÓDULO VENTAS -->
   <section class="panel" id="v-ventas" hidden>
-    <div class="phead">
+    <div class="phead" id="ventasHead">
       <div><h2>Ventas</h2><p>El día empieza con un sencillo en la mesa. Al cierre, lo contado menos el sencillo debe ser igual a lo vendido neto.</p></div>
     </div>
     <div><div class="seg" role="tablist" id="ventasSeg">
       <button data-go="ventas" aria-selected="true">Registro del día</button>
       <button data-go="ventas-facturas" aria-selected="false">Facturas y guías</button>
+      <button data-go="ventas-despacho" aria-selected="false">Despacho</button>
       <button data-go="ventas-clientes" aria-selected="false">Clientes</button>
       <button data-go="ventas-cierres" aria-selected="false">Cierres del mes</button>
       <button data-go="ventas-resumen" aria-selected="false">Resumen</button>
@@ -455,6 +461,14 @@ body:not(.admin) .needs-admin{display:none!important}
           <p class="note" style="margin:4px 0 0">Venta = cantidad × precio del producto.<br>Cuadre: (contado al cierre − sencillo inicial) debe ser igual al neto de mesa (efectivo vendido − gastos de mesa).</p>
         </div>
       </div>
+    </div>
+
+    <!-- DESPACHO (pantalla de Julio: sin precios) -->
+    <div class="panel" id="s-despacho" hidden>
+      <div><h2 id="despTitulo" style="font-size:1.9rem">Despacho</h2><p class="muted" id="despSub" style="margin:2px 0 0"></p></div>
+      <div class="tiles" id="despTiles"></div>
+      <div class="card empty" id="despMsg" hidden></div>
+      <div class="tablewrap"><table class="rt" id="tDesp"></table></div>
     </div>
 
     <!-- FACTURAS Y GUÍAS -->
@@ -694,15 +708,14 @@ body:not(.admin) .needs-admin{display:none!important}
         </form>
         <p class="hintline" style="margin:0">Solo cámbialo para empezar o si el talonario físico se adelantó. El siguiente ticket será este número + 1.</p>
       </div>
-      <div class="card needs-admin" style="display:grid;gap:10px;grid-column:1/-1">
+      <div class="card needs-admin" style="display:grid;gap:10px">
         <h3>Usuarios</h3>
-        <p class="note" style="margin:0">Solo entran las personas de esta lista. Los trabajadores entran con <b>usuario y contraseña</b> (no necesitan correo); los dueños, con Google. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF.</p>
+        <p class="note" style="margin:0">Solo entran los correos de esta lista. <b>Administrador</b>: todo, incluidos precios, usuarios y respaldo. <b>Registra</b>: tickets, gastos, cierres y volquetes. <b>Solo ve</b>: consulta y descarga PDF. <b>Despacho</b>: solo la lista de despacho de hoy, sin precios, de 6:30 a.m. a 5:45 p.m.</p>
         <div class="tablewrap"><table class="rt" id="tUsu"></table></div>
         <form id="usuForm" class="regform" novalidate autocomplete="off">
-          <div class="fld half"><label for="usuEmail">Usuario</label><input id="usuEmail" autocapitalize="none" spellcheck="false" placeholder="julio"><span class="hint">Sin espacios. Si entra con Google, escribe su correo.</span></div>
-          <div class="fld half"><label for="usuNombre">Nombre completo</label><input id="usuNombre" placeholder="Julio Pérez"></div>
-          <div class="fld half"><label for="usuClave">Contraseña inicial (DNI)</label><input id="usuClave" autocomplete="off" placeholder="DNI"><span class="hint">Al entrar por primera vez, se le pedirá cambiarla.</span></div>
-          <div class="fld half"><label for="usuRol">Permiso</label><select id="usuRol"><option value="editor">Registra</option><option value="lector">Solo ve</option><option value="admin">Administrador</option></select></div>
+          <div class="fld half"><label for="usuEmail">Correo de Google</label><input id="usuEmail" type="email" placeholder="nombre@gmail.com"></div>
+          <div class="fld half"><label for="usuNombre">Nombre</label><input id="usuNombre" placeholder="Luis Bazán"></div>
+          <div class="fld half"><label for="usuRol">Permiso</label><select id="usuRol"><option value="editor">Registra</option><option value="lector">Solo ve</option><option value="despacho">Despacho (sin precios)</option><option value="admin">Administrador</option></select></div>
           <div class="fld half" style="align-self:end"><button class="btn primary" type="submit">Agregar usuario</button></div>
           <div class="formerr" id="usuErr"></div>
         </form>
@@ -728,20 +741,7 @@ body:not(.admin) .needs-admin{display:none!important}
     <span class="mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 26 26"><path d="M3 17h13l2-6h4l2 3v3H3z" fill="#16202a"/><path d="M5 11l3-5h7l1 5z" fill="#16202a" opacity=".75"/><circle cx="7.5" cy="19.5" r="2.5" fill="#16202a"/><circle cx="19.5" cy="19.5" r="2.5" fill="#16202a"/></svg></span>
     <h1>Control Planta Agregados</h1>
     <p id="loginMsg">Cargando…</p>
-    <form class="loginform" id="loginForm" novalidate hidden>
-      <div class="fld"><label for="loginUser">Usuario</label><input id="loginUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="julio"></div>
-      <div class="fld"><label for="loginPass">Contraseña</label><input id="loginPass" type="password" autocomplete="current-password"></div>
-      <button class="btn primary" type="submit" id="loginEntrar">Entrar</button>
-      <div class="loginerr" id="loginErr" role="alert"></div>
-    </form>
-    <div class="loginsep" id="loginSep" hidden>o</div>
-    <button class="btn" id="loginBtn" hidden>Entrar con Google (dueños)</button>
-    <form class="loginform" id="claveForm" novalidate hidden>
-      <div class="fld"><label for="claveNueva">Nueva contraseña</label><input id="claveNueva" type="password" autocomplete="new-password"><span class="hint">Mínimo 6 caracteres. Solo tú debes saberla.</span></div>
-      <div class="fld"><label for="claveRep">Repite la nueva contraseña</label><input id="claveRep" type="password" autocomplete="new-password"></div>
-      <button class="btn primary" type="submit" id="claveGuardar">Guardar y entrar</button>
-      <div class="loginerr" id="claveErr" role="alert"></div>
-    </form>
+    <button class="btn primary" id="loginBtn" hidden>Entrar con Google</button>
     <button class="btn" id="loginSalir" hidden>Salir y entrar con otra cuenta</button>
   </div>
 </div>
@@ -1031,13 +1031,8 @@ const COLS = ["mov", "volquetes", "diesel"];
 
 /* ---------- state ---------- */
 let db = null, writable = true, myId = null;
-const ROLES = { admin: "Administrador", editor: "Registra", lector: "Solo ve" };
-/* Usuarios sin correo: por dentro se guardan como usuario@<authDomain>, una dirección que no recibe correos. */
-const DOM_INT = String((window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.authDomain) || "planta.local").toLowerCase();
-const esInterno = em => String(em || "").toLowerCase().endsWith("@" + DOM_INT);
-const usuarioDe = u => (u && u.usuario) || String((u && u.email) || u || "").split("@")[0].replace(/\.\d+$/, "");
-function normUsuario(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, ".").replace(/[^a-z0-9._-]/g, "").replace(/\.{2,}/g, ".").replace(/^[._-]+|[._-]+$/g, ""); }
-const S = { mes: mesDe(hoy()), dia: hoy(), cache: {}, live: {}, fetched: {}, config: {}, view: "inicio", vq: VOLQUETES[0].id, diasMes: [], productos: [], clientes: [], equipos: [], equiposCargados: false, eqFiltro: "todos", tanques: {}, dFiltro: "todos", dFEq: "todos", dFMov: "todos", facturas: [], faSeg: "pend", faOpen: new Set(), contador: undefined, usuarios: [], rol: "", inputsDia: null, dirtyIni: false, dirtyFin: false };
+const ROLES = { admin: "Administrador", editor: "Registra", lector: "Solo ve", despacho: "Despacho" };
+const S = { mes: mesDe(hoy()), dia: hoy(), cache: {}, live: {}, fetched: {}, config: {}, view: "inicio", vq: VOLQUETES[0].id, diasMes: [], productos: [], clientes: [], equipos: [], equiposCargados: false, eqFiltro: "todos", tanques: {}, dFiltro: "todos", dFEq: "todos", dFMov: "todos", facturas: [], faSeg: "pend", faOpen: new Set(), desp: {}, despFecha: null, despListo: false, despErr: "", despRetry: 0, despSync: new Set(), soloDespacho: false, contador: undefined, usuarios: [], rol: "", inputsDia: null, dirtyIni: false, dirtyFin: false };
 const unsubs = [], charts = {};
 
 function cfg() {
@@ -1089,7 +1084,7 @@ function errMsg(e) {
 function nombreDe(id) {
   if (!id) return "";
   const u = S.usuarios.find(x => x.email === id);
-  return u ? (u.nombre || usuarioDe(u)) : (String(id).includes("@") ? usuarioDe(String(id)) : "un usuario");
+  return u ? (u.nombre || u.email.split("@")[0]) : (String(id).includes("@") ? String(id).split("@")[0] : "un usuario");
 }
 function resolveNames() {
   $$("[data-uid]").forEach(e => { const n = nombreDe(e.dataset.uid); e.textContent = n ? (e.dataset.pre ?? "por ") + n : ""; });
@@ -1151,7 +1146,7 @@ function estadoDia(f) {
 }
 
 /* ---------- routing ---------- */
-const VENTAS_SUB = { "ventas": "dia", "ventas-facturas": "facturas", "ventas-clientes": "clientes", "ventas-cierres": "cierres", "ventas-resumen": "resumen" };
+const VENTAS_SUB = { "ventas": "dia", "ventas-facturas": "facturas", "ventas-despacho": "despacho", "ventas-clientes": "clientes", "ventas-cierres": "cierres", "ventas-resumen": "resumen" };
 const PROXIMOS = { excavadoras: "Excavadoras", chancadora: "Chancadora", cargadores: "Cargadores frontales" };
 const PANELS = ["inicio", "ventas", "productos", "logistica", "equipos", "diesel", "volquetes", "volquete", "proximo", "ajustes"];
 const PROX_TIPO = { excavadoras: "Excavadora", chancadora: "Chancadora", cargadores: "Cargador frontal" };
@@ -1164,6 +1159,7 @@ function viewPanel(v) {
   return ["inicio", "productos", "logistica", "volquetes", "ajustes"].includes(v) ? v : "inicio";
 }
 function go(v, push = true) {
+  if (S.soloDespacho) v = "ventas-despacho"; // el despachador solo tiene esta pantalla
   if (v === "diesel-equipos") v = "equipos";
   if (v.startsWith("volquete-")) { const id = v.slice(9); if (!VOLQUETES.some(x => x.id === id)) v = "volquetes"; else S.vq = id; }
   const panel = viewPanel(v); if (panel === "inicio") v = "inicio";
@@ -1171,7 +1167,7 @@ function go(v, push = true) {
   PANELS.forEach(p => { $("#v-" + p).hidden = p !== panel; });
   if (panel === "ventas") {
     const sub = VENTAS_SUB[v];
-    ["dia", "facturas", "clientes", "cierres", "resumen"].forEach(s => { $("#s-" + s).hidden = s !== sub; });
+    ["dia", "facturas", "despacho", "clientes", "cierres", "resumen"].forEach(s => { $("#s-" + s).hidden = s !== sub; });
     $$("#ventasSeg button").forEach(b => b.setAttribute("aria-selected", b.dataset.go === v ? "true" : "false"));
   }
   if (panel === "proximo") $("#pxTitulo").textContent = PROXIMOS[v];
@@ -1202,7 +1198,7 @@ function renderAll() {
 function renderView() {
   const p = viewPanel(S.view);
   if (p === "inicio") renderInicio();
-  else if (p === "ventas") { const s = VENTAS_SUB[S.view]; if (s === "dia") renderDia(); else if (s === "facturas") renderFacturas(); else if (s === "clientes") renderClientes(); else if (s === "cierres") renderCierres(); else renderResumen(); }
+  else if (p === "ventas") { const s = VENTAS_SUB[S.view]; if (s === "dia") renderDia(); else if (s === "facturas") renderFacturas(); else if (s === "despacho") renderDespacho(); else if (s === "clientes") renderClientes(); else if (s === "cierres") renderCierres(); else renderResumen(); }
   else if (p === "productos") renderProductos();
   else if (p === "logistica") renderLogistica();
   else if (p === "diesel") renderDiesel();
@@ -1242,6 +1238,7 @@ function setDia(f) {
 }
 function renderDia() {
   const f = S.dia, movs = movsDia(f);
+  subDespacho(f);
   $("#diaSel").value = f;
   $("#diaNombre").textContent = capDia(f) + (f === hoy() ? " · hoy" : "");
   $("#diaTxt").textContent = fechaTxt(f);
@@ -1275,12 +1272,12 @@ function renderDia() {
   if (!filas.length) t.innerHTML = `<tbody><tr><td class="empty wide" colspan="10">Aún no hay movimientos el ${esc(fechaTxt(f))}. ${writable ? "Agrega el primer ticket en la fila de abajo." : ""}</td></tr></tbody>`;
   else t.innerHTML = `<thead><tr><th class="num">N°</th><th>Cant.</th><th>Material</th><th>Ticket</th><th>Cliente / Concepto</th><th class="num">Ingreso</th><th class="num">Gasto mesa</th><th class="num">Gasto caja</th><th>Obs.</th><th></th></tr></thead><tbody>` +
     filas.map((m, i) => {
-      const k = celdas(m, false), an = m.estado === "anulado";
+      const k = celdas(m, false), an = m.estado === "anulado", dsp = !an && S.despListo && usaDespacho(m) ? (S.desp[m.id] || {}) : null;
       const acts = m.tipo === "factreg" ? `<button class="btn small" data-act="verfac" data-id="${esc(m.facId)}">Ver factura</button>`
         : an ? `<button class="btn small" data-act="vermotivo" data-id="${esc(m.id)}">Ver motivo</button>`
         : `<span class="needs-write"><button class="btn small" data-act="movedit" data-id="${esc(m.id)}">Editar</button>${T_TICKET.includes(m.tipo) || m.tipo === "despacho" ? `<button class="btn small ghost" data-act="anular" data-id="${esc(m.id)}">Anular</button>` : `<button class="btn small ghost" data-act="movdel" data-id="${esc(m.id)}">Borrar</button>`}</span>`;
-      return `<tr class="${an ? "anul" : ""}">
-      <td class="num" data-l="N°">${i + 1}</td><td data-l="Cant.">${esc(cantTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Material">${esc(matTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Ticket"><b>${esc(ticketTxt(m))}</b></td>
+      return `<tr class="${an ? "anul" : dsp ? (dsp.despachado ? "dok" : "dpend") : ""}">
+      <td class="num" data-l="N°">${i + 1}</td><td data-l="Cant.">${esc(cantTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Material">${esc(matTxt(m)).replace(/\n/g, "<br>")}</td><td data-l="Ticket"><b>${esc(ticketTxt(m))}</b>${dsp ? (dsp.despachado ? `<span class="dstate ok">✓ Despachado ${esc(horaLima(dsp.despachadoEn))}<span data-uid="${esc(dsp.despachadoPor || "")}" data-pre=" · "></span></span>` : `<span class="dstate pend">Por despachar</span>`) : ""}</td>
       <td data-l="Cliente / Concepto" class="wide">${esc(m.cliente || "")}${m.ruc && m.tipo === "factreg" ? `<span class="by">RUC ${esc(m.ruc)}</span>` : ""}${m.placa ? `<span class="by">Placa ${esc(m.placa)}${m.licencia ? " · Lic. " + esc(m.licencia) : ""}</span>` : ""}${byTag(m)}</td>
       <td class="num" data-l="Ingreso">${k.ing}</td><td class="num" data-l="Gasto mesa">${k.mesa}</td><td class="num" data-l="Gasto caja">${k.caja}</td>
       <td data-l="Obs." class="wide${k.tag ? " tag" : ""}">${an ? `<span class="pill bad">ANULADO</span> ` : ""}${esc(an ? (m.motivoAnulacion || "") : k.obs)}</td>
@@ -1293,6 +1290,7 @@ function renderDia() {
   $("#cierreMsg").className = "hintline" + ($("#cierreMsg").textContent ? " warn" : "");
   $("#cerrarBtn").textContent = est === "cerrado" ? "Volver a cerrar y descargar PDF" : "Cerrar día y descargar PDF";
   renderQuickMeta();
+  autoSyncDespacho();
 }
 function resumenHTML(c, facTot) {
   const row = (l, v, cls = "") => `<div class="rrow ${cls}"><span>${esc(l)}</span><i></i><b>${v === null ? "—" : soles(v)}</b></div>`;
@@ -1491,6 +1489,7 @@ async function guardarNueva(v, inicial) {
       const k = ult + 1, mv = Object.assign({}, body, { ticket: "t/" + k, ticketN: k });
       tx.set(ref, { ultimo: k, actualizadoPor: myId, actualizadoEn: now });
       tx.set(movRef, mv);
+      if (usaDespacho(mv)) tx.set(db.doc("despacho/" + movRef.id), Object.assign({ despachado: false, despachadoPor: "", despachadoEn: "" }, despachoDe(mv)));
       if (fRef) { // la guía se descuenta de la factura en la misma transacción
         const f = fs.data() || {}, g = guiaDe(Object.assign({ id: movRef.id }, mv));
         tx.set(fRef, calcFactura(Object.assign({}, f, { guias: (f.guias || []).filter(x => x.movId !== g.movId).concat([g]) })));
@@ -1500,6 +1499,7 @@ async function guardarNueva(v, inicial) {
   } else {
     body.ticket = "";
     await movRef.set(body);
+    if (usaDespacho(body)) syncDespacho(Object.assign({ id: movRef.id }, body)).catch(() => {});
   }
   delete S.fetched[mes + "|mov"];
   if (T_VENTA.includes(v.tipo)) recordarCliente(v.cliente, v.placa, v.ruc).catch(() => {});
@@ -2577,6 +2577,80 @@ async function pdfGuias(mes) {
   await saveFile("guias-" + mes + ".pdf", doc.output("blob"));
 }
 
+/* ===== DESPACHO: lista sin precios para el despachador (solo hoy, de 6:30 a 17:45, hora de Lima) ===== */
+const DESP_INI = 6 * 60 + 30, DESP_FIN = 17 * 60 + 45;
+const limaAhora = () => new Date(Date.now() - 5 * 3600e3); // Perú: UTC−5 todo el año
+const limaHoy = () => { const t = limaAhora(); return t.getUTCFullYear() + "-" + pad(t.getUTCMonth() + 1) + "-" + pad(t.getUTCDate()); };
+const enHorarioDesp = () => { const t = limaAhora(), m = t.getUTCHours() * 60 + t.getUTCMinutes(); return m >= DESP_INI && m <= DESP_FIN; };
+const horaLima = iso => { if (!iso) return ""; const t = new Date(new Date(iso).getTime() - 5 * 3600e3); return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
+const diaNDe = f => Number(String(f).replace(/-/g, ""));
+const usaDespacho = m => ["venta", "deposito", "factura", "despacho"].includes(m.tipo) && itemsDe(m).length > 0;
+const despachoDe = m => ({ fecha: m.fecha, diaN: diaNDe(m.fecha), orden: num(m.orden), ticket: ticketTxt(m), cliente: m.cliente || "",
+  items: itemsDe(m).map(i => ({ material: i.material || "", cantidad: num(i.cantidad) })), estado: m.estado === "anulado" ? "anulado" : "ok" });
+let despUnsub = null;
+function cortarDespacho() { if (despUnsub) { try { despUnsub(); } catch (_) {} despUnsub = null; } S.despFecha = null; S.desp = {}; S.despListo = false; }
+function subDespacho(fecha) {
+  if (!db) return;
+  if (S.despFecha === fecha && (despUnsub || (S.despErr && Date.now() < S.despRetry))) return;
+  if (despUnsub) { try { despUnsub(); } catch (_) {} despUnsub = null; }
+  S.despFecha = fecha; S.desp = {}; S.despListo = false; S.despErr = "";
+  const q = S.soloDespacho ? db.collection("despacho").where("diaN", "==", diaNDe(fecha)) : db.collection("despacho").where("fecha", "==", fecha);
+  despUnsub = q.onSnapshot(snap => {
+    const o = {}; snap.docs.forEach(d => { o[d.id] = Object.assign({ id: d.id }, d.data()); });
+    S.desp = o; S.despListo = true; S.despErr = ""; renderView();
+  }, err => { S.despErr = (err && err.code) || "error"; S.despRetry = Date.now() + 25000; S.despListo = false; despUnsub = null; renderView(); });
+}
+async function syncDespacho(m) {
+  const ref = db.doc("despacho/" + m.id), want = despachoDe(m);
+  if (S.desp[m.id] || (await ref.get()).exists) await ref.update(want);
+  else await ref.set(Object.assign({ despachado: false, despachadoPor: "", despachadoEn: "" }, want));
+}
+const igualDesp = (d, w) => !!d && ["fecha", "ticket", "cliente", "estado"].every(k => d[k] === w[k]) && num(d.orden) === w.orden && JSON.stringify(d.items || []) === JSON.stringify(w.items);
+/* Mantiene la lista del despachador igual a los tickets del día (crea, corrige, marca anulados y quita los borrados) */
+function autoSyncDespacho() {
+  if (!db || !writable || S.soloDespacho || !S.despListo || S.despFecha !== S.dia) return;
+  const mes = mesDe(S.dia); if (!(S.live[mes] && S.live[mes].mov)) return;
+  const ids = new Set(), libre = id => { setTimeout(() => S.despSync.delete(id), 4000); };
+  movsDia(S.dia).filter(usaDespacho).forEach(m => {
+    ids.add(m.id);
+    if (S.despSync.has(m.id) || igualDesp(S.desp[m.id], despachoDe(m))) return;
+    S.despSync.add(m.id); syncDespacho(m).catch(() => {}).finally(() => libre(m.id));
+  });
+  Object.keys(S.desp).forEach(id => {
+    if (ids.has(id) || S.despSync.has(id)) return;
+    S.despSync.add(id); db.doc("despacho/" + id).delete().catch(() => {}).finally(() => libre(id));
+  });
+}
+function renderDespacho() {
+  const solo = S.soloDespacho, f = solo ? limaHoy() : S.dia, msg = $("#despMsg"), t = $("#tDesp");
+  $("#despTitulo").textContent = "Despacho · " + capDia(f) + " " + fechaTxt(f);
+  $("#despSub").textContent = solo ? "Cuando el carro salga cargado, toca “Despachado”. La lista se ve de 6:30 a.m. a 5:45 p.m." : "Así lo ve el despachador: sin precios ni montos. Lo que marca aquí se ve en verde en el Registro del día.";
+  const aviso = h => { msg.hidden = false; msg.innerHTML = h; t.innerHTML = ""; $("#despTiles").innerHTML = ""; };
+  if (solo && !enHorarioDesp()) { cortarDespacho(); aviso("La lista de despacho se ve de <b>6:30 a.m. a 5:45 p.m.</b>"); return; }
+  subDespacho(f);
+  if (S.despErr) { aviso(S.despErr === "permission-denied" ? (solo ? "La lista de despacho se ve de <b>6:30 a.m. a 5:45 p.m.</b>" : "No tienes permiso para ver el despacho.") : "No se pudo cargar la lista. Revisa tu internet."); return; }
+  if (!S.despListo) { aviso("Cargando…"); return; }
+  const rows = Object.values(S.desp).sort((a, b) => num(a.orden) - num(b.orden)), vig = rows.filter(r => r.estado !== "anulado");
+  const pend = vig.filter(r => !r.despachado), ok = vig.filter(r => r.despachado), m3 = arr => nf(sum(arr, r => sum(r.items || [], i => i.cantidad)));
+  $("#despTiles").innerHTML = tile("Por despachar", String(pend.length), m3(pend) + " m³", "key", pend.length ? "down" : "up") + tile("Despachados", String(ok.length), m3(ok) + " m³");
+  if (!rows.length) { msg.hidden = false; msg.textContent = "Todavía no hay tickets " + (solo || f === hoy() ? "hoy." : "este día."); t.innerHTML = ""; return; }
+  msg.hidden = true;
+  t.innerHTML = `<thead><tr><th class="num">N°</th><th>Cant.</th><th>Material</th><th>Ticket</th><th>Cliente / Concepto</th><th></th></tr></thead><tbody>` + rows.map((r, i) => {
+    const an = r.estado === "anulado", it = r.items || [];
+    const est = an ? `<span class="pill">ANULADO · no despachar</span>` : r.despachado ? `<span class="dstate ok">✓ Despachado ${esc(horaLima(r.despachadoEn))}<span data-uid="${esc(r.despachadoPor || "")}" data-pre=" · "></span></span>` : `<span class="dstate pend">Por despachar</span>`;
+    const btn = an ? "" : r.despachado ? `<button class="btn small ghost needs-write" data-act="despundo" data-id="${esc(r.id)}">Deshacer</button>` : `<button class="btn primary dbtn needs-write" data-act="despok" data-id="${esc(r.id)}">Despachado</button>`;
+    return `<tr class="${an ? "anul" : r.despachado ? "dok" : "dpend"}"><td class="num" data-l="N°">${i + 1}</td><td data-l="Cant.">${it.map(x => esc(nf(x.cantidad)) + " m³").join("<br>")}</td><td data-l="Material">${it.map(x => esc(x.material)).join("<br>")}</td>
+      <td data-l="Ticket"><b>${esc(r.ticket || "")}</b></td><td data-l="Cliente / Concepto" class="wide">${esc(r.cliente || "")}${est}</td><td class="acts">${btn}</td></tr>`;
+  }).join("") + "</tbody>";
+  resolveNames();
+}
+async function marcarDespacho(id, val, b) {
+  if (!db) return;
+  b.disabled = true;
+  try { await db.doc("despacho/" + id).update({ despachado: val, despachadoPor: val ? myId : "", despachadoEn: val ? new Date().toISOString() : "" }); }
+  catch (er) { toast(er && er.code === "permission-denied" ? "Fuera de horario: el despacho se marca de 6:30 a.m. a 5:45 p.m." : errMsg(er)); b.disabled = false; }
+}
+
 /* ===== AJUSTES ===== */
 function renderAjustes() {
   renderQuickMeta(); renderUsuarios();
@@ -2639,6 +2713,7 @@ document.addEventListener("click", async e => {
     if (!await confirmBox("Se borrará “" + esc(r.cliente || TIPOS[r.tipo].l) + (r.monto ? " · " + soles(r.monto) : "") + "” del " + esc(fechaTxt(r.fecha)) + ".", "Borrar")) return;
     try { await db.doc("m/" + mesDe(r.fecha) + "/mov/" + r.id).delete(); toast("Borrado."); } catch (er) { toast(errMsg(er)); }
   }
+  else if (act === "despok" || act === "despundo") marcarDespacho(id, act === "despok", b);
   else if (act === "verfac") { const fa = facById(id); S.faSeg = "todas"; $("#faBus").value = fa ? fa.codigo : ""; if (fa) S.faOpen.add(fa.id); go("ventas-facturas"); }
   else if (act === "faguias") { if (S.faOpen.has(id)) S.faOpen.delete(id); else S.faOpen.add(id); renderFacturas(); }
   else if (act === "faedit") { const fa = facById(id); if (fa) openFactura(fa); }
@@ -2673,25 +2748,8 @@ document.addEventListener("click", async e => {
     try { await db.doc("equipos/" + q.id).update({ activo: q.activo === false }); toast(q.nombre + (q.activo === false ? " reactivado." : " dado de baja.")); } catch (er) { toast(errMsg(er)); }
   }
   else if (act === "usudel") {
-    const x = S.usuarios.find(u => u.email === id), quien = esInterno(id) ? usuarioDe(x || id) : id;
-    if (!await confirmBox("Se quitará el acceso de <b>" + esc(quien) + "</b>. Sus registros se conservan.", "Quitar acceso")) return;
-    try {
-      await db.doc("usuarios/" + id).delete();
-      if (esInterno(id)) { const a = db.doc("alias/" + usuarioDe(x || id)); const s = await a.get().catch(() => null); if (s && s.exists && s.data().email === id) await a.delete().catch(() => {}); }
-      toast("Acceso quitado.");
-    } catch (er) { toast(errMsg(er)); }
-  }
-  else if (act === "usureset") {
-    const old = S.usuarios.find(u => u.email === id); if (!old) return;
-    const u = usuarioDe(old), clave = await pedirClave(u); if (!clave) return;
-    try {
-      const email = await crearCuenta(u, clave), now = new Date().toISOString(), b = db.batch();
-      b.set(db.doc("usuarios/" + email), Object.assign({}, strip(old), { email, usuario: u, tipo: "usuario", debeCambiar: true, restablecidoPor: myId, restablecidoEn: now }));
-      b.delete(db.doc("usuarios/" + old.email));
-      b.set(db.doc("alias/" + u), { email });
-      await b.commit();
-      toast("Contraseña de " + u + " restablecida. Al entrar se le pedirá cambiarla.");
-    } catch (er) { toast(errAuth(er)); }
+    if (!await confirmBox("Se quitará el acceso de " + esc(id) + ". Sus registros se conservan.", "Quitar acceso")) return;
+    try { await db.doc("usuarios/" + id).delete(); toast("Acceso quitado."); } catch (er) { toast(errMsg(er)); }
   }
   else if (act === "vqedit") { $("#vqFecha").value = b.dataset.fecha; await cargarRegistro(true); $("#vqForm").scrollIntoView({ behavior: "smooth", block: "center" }); $("#vqViajes").focus(); }
 });
@@ -2717,6 +2775,7 @@ $("#cliNuevo").addEventListener("click", () => db ? openCliente(null) : toast("T
 $("#prodNuevo").addEventListener("click", () => db ? openProducto(null) : toast("Todavía no hay conexión con la base de datos."));
 $("#fCli").addEventListener("input", renderClientes);
 $("#faBus").addEventListener("input", renderFacturas);
+setInterval(() => { if (S.view === "ventas-despacho") renderDespacho(); }, 30000); // cambia de día y respeta el horario sin recargar
 $("#faNueva").addEventListener("click", () => openFactura(null));
 $("#gPdf").addEventListener("click", async function () { this.disabled = true; try { await pdfGuias(S.mes); } catch (_) { toast("No se pudo generar el PDF."); } finally { this.disabled = false; } });
 $("#diaSel").addEventListener("change", e => setDia(e.target.value));
@@ -2805,87 +2864,28 @@ function renderUsuarios() {
   const t = $("#tUsu"); if (!t) return;
   const list = S.usuarios.slice().sort((a, b) => (a.nombre || a.email).localeCompare(b.nombre || b.email, "es"));
   t.innerHTML = !list.length ? `<tbody><tr><td class="empty wide">Sin usuarios.</td></tr></tbody>` :
-    `<thead><tr><th>Nombre</th><th>Usuario / correo</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => {
-      const int = esInterno(u.email), yo = u.email === myId;
-      const ident = int ? `<b>${esc(usuarioDe(u))}</b><br><span class="muted" style="font-size:.8rem">${u.debeCambiar ? "Falta que cambie su clave" : "Usuario y contraseña"}</span>` : `${esc(u.email)}<br><span class="muted" style="font-size:.8rem">Google</span>`;
-      const acts = yo ? '<span class="muted" style="font-size:.84rem">Tú</span>' : `<div style="display:grid;gap:4px;justify-items:end">${int ? `<button class="btn small" data-act="usureset" data-id="${esc(u.email)}">Nueva clave</button>` : ""}<button class="btn small ghost" data-act="usudel" data-id="${esc(u.email)}">Quitar</button></div>`;
-      return `<tr>
-      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Usuario / correo" class="wide">${ident}</td>
-      <td data-l="Permiso"><select data-usurol="${esc(u.email)}" aria-label="Permiso de ${esc(u.nombre || u.email)}"${yo ? " disabled" : ""}>${Object.keys(ROLES).map(k => `<option value="${k}"${k === u.rol ? " selected" : ""}>${ROLES[k]}</option>`).join("")}</select></td>
-      <td class="acts">${acts}</td></tr>`;
-    }).join("") + "</tbody>";
-}
-function errAuth(e) {
-  const c = (e && e.code) || "";
-  if (c === "auth/operation-not-allowed") return "Falta activar en Firebase el acceso con Correo electrónico/contraseña (Authentication → Método de acceso).";
-  if (c === "auth/weak-password") return "La contraseña es muy corta: mínimo 6 caracteres.";
-  if (c === "auth/network-request-failed") return "Sin internet. Inténtalo cuando vuelva la señal.";
-  if (c === "auth/too-many-requests") return "Demasiados intentos seguidos. Espera unos minutos y vuelve a intentarlo.";
-  if (["auth/wrong-password", "auth/user-not-found", "auth/invalid-credential", "auth/invalid-login-credentials", "auth/invalid-email", "auth/user-disabled"].includes(c)) return "Usuario o contraseña incorrectos.";
-  if (c === "auth/requires-recent-login") return "Por seguridad, sal y vuelve a entrar antes de cambiar la contraseña.";
-  if (c === "auth/email-already-in-use") return "No se pudo crear ese usuario. Prueba con otro nombre de usuario.";
-  return errMsg(e) || ("No se pudo completar (" + (c || "error") + ").");
-}
-/* Crea la cuenta con una segunda conexión, para no cerrar la sesión del administrador. */
-async function crearCuenta(u, clave) {
-  const app2 = firebase.apps.find(a => a.name === "altas") || firebase.initializeApp(window.FIREBASE_CONFIG, "altas");
-  const a2 = app2.auth();
-  try { await a2.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch (_) {}
-  for (let i = 1; i <= 20; i++) {
-    const email = (i === 1 ? u : u + "." + i) + "@" + DOM_INT;
-    try { await a2.createUserWithEmailAndPassword(email, clave); await a2.signOut().catch(() => {}); return email; }
-    catch (e) { if (!(e && e.code === "auth/email-already-in-use")) throw e; }
-  }
-  throw { code: "auth/email-already-in-use" };
-}
-function pedirClave(u) {
-  return new Promise(res => {
-    const close = modal(`<header><h3>Restablecer contraseña</h3></header><div class="body"><form id="rcForm" class="regform" novalidate autocomplete="off">
-      <p class="note" style="grid-column:1/-1;margin:0">Nueva contraseña inicial para <b>${esc(u)}</b> (por ejemplo, su DNI). Al entrar, se le pedirá cambiarla por una propia.</p>
-      ${fld("rcClave", "Contraseña inicial", "", { ph: "DNI" })}<div class="formerr" id="rcErr"></div>
-      <div class="foot" style="grid-column:1/-1"><button type="button" class="btn" id="rcNo">Cancelar</button><button class="btn primary" type="submit">Restablecer</button></div></form></div>`);
-    const done = v => { close(); res(v); };
-    $("#rcNo").onclick = () => done(null);
-    $("#rcForm").onsubmit = ev => { ev.preventDefault(); const v = $("#rcClave").value.trim(); if (v.length < 6) { $("#rcErr").textContent = "Mínimo 6 caracteres."; return; } done(v); };
-    $("#rcClave").focus();
-  });
+    `<thead><tr><th>Nombre</th><th>Correo</th><th>Permiso</th><th></th></tr></thead><tbody>` + list.map(u => `<tr>
+      <td data-l="Nombre"><b>${esc(u.nombre || "")}</b></td><td data-l="Correo" class="wide">${esc(u.email)}</td>
+      <td data-l="Permiso"><select data-usurol="${esc(u.email)}" aria-label="Permiso de ${esc(u.email)}"${u.email === myId ? " disabled" : ""}>${Object.keys(ROLES).map(k => `<option value="${k}"${k === u.rol ? " selected" : ""}>${ROLES[k]}</option>`).join("")}</select></td>
+      <td class="acts">${u.email === myId ? '<span class="muted" style="font-size:.84rem">Tú</span>' : `<button class="btn small ghost" data-act="usudel" data-id="${esc(u.email)}">Quitar</button>`}</td></tr>`).join("") + "</tbody>";
 }
 async function agregarUsuario(e) {
   e.preventDefault();
-  const raw = $("#usuEmail").value.trim(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value, clave = $("#usuClave").value.trim(), err = $("#usuErr");
-  const limpiar = () => { $("#usuEmail").value = ""; $("#usuNombre").value = ""; $("#usuClave").value = ""; err.textContent = ""; };
-  err.textContent = "";
-  if (raw.includes("@")) {
-    const email = raw.toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Ese correo no es válido."; return; }
-    if (esInterno(email)) { err.textContent = "Escribe solo el usuario, sin @."; return; }
-    if (S.usuarios.some(u => u.email === email)) { err.textContent = "Ese correo ya tiene acceso. Cambia su permiso en la tabla."; return; }
-    try {
-      await db.doc("usuarios/" + email).set({ email, nombre: nombre || email.split("@")[0], rol, tipo: "google", creadoPor: myId, creadoEn: new Date().toISOString() });
-      limpiar(); toast(email + " ya puede entrar con Google.");
-    } catch (er) { err.textContent = errMsg(er); }
-    return;
-  }
-  const u = normUsuario(raw);
-  if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(u)) { err.textContent = "Escribe un usuario de 3 a 30 letras o números, sin espacios (por ejemplo: julio o julio.perez)."; return; }
-  if (S.usuarios.some(x => esInterno(x.email) && usuarioDe(x) === u)) { err.textContent = "Ya existe el usuario " + u + ". Usa otro, por ejemplo " + u + ".perez."; return; }
-  if (clave.length < 6) { err.textContent = "Escribe la contraseña inicial (su DNI), de al menos 6 caracteres."; return; }
-  const btn = $("#usuForm button[type=submit]"); btn.disabled = true;
+  const email = $("#usuEmail").value.trim().toLowerCase(), nombre = $("#usuNombre").value.trim(), rol = $("#usuRol").value;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $("#usuErr").textContent = "Escribe un correo válido (el de su cuenta de Google)."; return; }
+  if (S.usuarios.some(u => u.email === email)) { $("#usuErr").textContent = "Ese correo ya tiene acceso. Cambia su permiso en la tabla."; return; }
   try {
-    const email = await crearCuenta(u, clave), b = db.batch();
-    b.set(db.doc("usuarios/" + email), { email, usuario: u, nombre: nombre || u, rol, tipo: "usuario", debeCambiar: true, creadoPor: myId, creadoEn: new Date().toISOString() });
-    b.set(db.doc("alias/" + u), { email });
-    await b.commit();
-    limpiar(); toast("Listo: " + u + " ya puede entrar con su contraseña inicial.");
-  } catch (er) { err.textContent = errAuth(er); }
-  finally { btn.disabled = false; }
+    await db.doc("usuarios/" + email).set({ email, nombre: nombre || email.split("@")[0], rol, creadoPor: myId, creadoEn: new Date().toISOString() });
+    $("#usuEmail").value = ""; $("#usuNombre").value = ""; $("#usuErr").textContent = "";
+    toast(email + " ya puede entrar.");
+  } catch (er) { $("#usuErr").textContent = errMsg(er); }
 }
 /* ===== RESPALDO ===== */
 async function exportarRespaldo() {
   const btn = $("#bkExport"); btn.disabled = true; $("#bkMsg").textContent = "Preparando respaldo…";
   try {
     const out = { app: "planta-agregados", version: 1, exportado: new Date().toISOString(), docs: {} };
-    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios", "alias", "tanques", "equipos", "facturas"]) {
+    for (const col of ["productos", "clientes", "config", "contadores", "dias", "usuarios", "tanques", "equipos", "facturas", "despacho"]) {
       const s = await db.collection(col).get(); s.docs.forEach(d => { out.docs[col + "/" + d.id] = d.data(); });
     }
     let m = addMes(mesDe(hoy()), 1);
@@ -2919,15 +2919,12 @@ go(start, false);
 
 function mostrarLogin(modo, correo) {
   $("#loginView").hidden = false;
-  const entrar = modo === "entrar";
-  $("#loginBtn").hidden = !entrar; $("#loginSep").hidden = !entrar; $("#loginForm").hidden = !entrar; $("#claveForm").hidden = true;
+  $("#loginBtn").hidden = modo !== "entrar";
   $("#loginSalir").hidden = modo !== "sinacceso";
-  const quien = esInterno(correo) ? `El usuario <b>${esc(usuarioDe(correo))}</b>` : `El correo <b>${esc(correo)}</b>`;
   $("#loginMsg").innerHTML = modo === "config" ? "Falta configurar Firebase. Copia los datos de tu proyecto en <b>firebase-config.js</b> (mira el README)."
-    : modo === "sinacceso" ? `${quien} no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
+    : modo === "sinacceso" ? `El correo <b>${esc(correo)}</b> no tiene acceso. Pide a un administrador que te agregue en Ajustes → Usuarios.`
     : modo === "error" ? "No se pudo conectar. Revisa tu internet y recarga la página."
-    : "Entra con tu usuario y contraseña.";
-  if (entrar) setTimeout(() => { if (!$("#loginForm").hidden) $("#loginUser").focus(); }, 0);
+    : "Entra con tu cuenta de Google.";
 }
 /* Con internet lento, no hace esperar a la persona: Firebase guarda en el equipo y sube solo. */
 function escriturasSinEspera() {
@@ -2958,43 +2955,6 @@ function escriturasSinEspera() {
   };
   const salir = () => auth.signOut().then(() => location.reload());
   $("#logoutBtn").onclick = salir; $("#loginSalir").onclick = salir;
-  let claveLogin = "";
-  $("#loginForm").onsubmit = async ev => {
-    ev.preventDefault();
-    const u = normUsuario($("#loginUser").value), pass = $("#loginPass").value, er = $("#loginErr");
-    er.textContent = "";
-    if (!u || !pass) { er.textContent = "Escribe tu usuario y tu contraseña."; return; }
-    $("#loginEntrar").disabled = true;
-    try {
-      let email = u + "@" + DOM_INT;
-      try { const s = await fs.doc("alias/" + u).get(); if (s.exists && s.data().email) email = s.data().email; } catch (_) {}
-      claveLogin = pass;
-      await auth.signInWithEmailAndPassword(email, pass);
-    } catch (e) { er.textContent = errAuth(e); }
-    finally { $("#loginEntrar").disabled = false; }
-  };
-  const pedirCambio = (u, perfil) => {
-    $("#loginView").hidden = false;
-    ["#loginBtn", "#loginSep", "#loginForm"].forEach(s => { $(s).hidden = true; });
-    $("#claveForm").hidden = false; $("#loginSalir").hidden = false;
-    $("#loginMsg").innerHTML = `Hola <b>${esc(perfil.nombre || usuarioDe(perfil))}</b>. Antes de empezar, crea una contraseña nueva que solo tú sepas.`;
-    $("#claveNueva").focus();
-    $("#claveForm").onsubmit = async ev => {
-      ev.preventDefault();
-      const a = $("#claveNueva").value, b = $("#claveRep").value, er = $("#claveErr"); er.textContent = "";
-      if (a.length < 6) { er.textContent = "Mínimo 6 caracteres."; return; }
-      if (a !== b) { er.textContent = "Las dos contraseñas no coinciden."; return; }
-      if (claveLogin && a === claveLogin) { er.textContent = "Debe ser distinta a tu contraseña inicial (tu DNI)."; return; }
-      $("#claveGuardar").disabled = true;
-      try {
-        await u.updatePassword(a);
-        await fs.doc("usuarios/" + myId).update({ debeCambiar: false, claveCambiadaEn: new Date().toISOString() });
-        claveLogin = ""; $("#claveForm").hidden = true; $("#loginSalir").hidden = true;
-        iniciar(Object.assign({}, perfil, { debeCambiar: false }));
-      } catch (e) { er.textContent = errAuth(e); }
-      finally { $("#claveGuardar").disabled = false; }
-    };
-  };
   window.addEventListener("offline", () => { $("#dbTxt").textContent = "Sin internet"; $("#dbDot").className = "dot err"; });
   window.addEventListener("online", () => status(true));
   let iniciado = false;
@@ -3013,20 +2973,20 @@ function escriturasSinEspera() {
       }
     } catch (e) { if (!(e && e.code === "permission-denied")) { mostrarLogin("error"); return; } }
     if (!perfil || !ROLES[perfil.rol]) { mostrarLogin("sinacceso", myId); return; }
-    if (perfil.debeCambiar && esInterno(myId)) { pedirCambio(u, perfil); return; }
-    iniciar(perfil);
-  });
-  function iniciar(perfil) {
-    if (iniciado) return;
     iniciado = true;
     escriturasSinEspera();
     db = fs; S.rol = perfil.rol;
     $("#loginView").hidden = true;
-    $("#userChip").textContent = (perfil.nombre || usuarioDe(perfil)) + " · " + ROLES[perfil.rol];
+    $("#userChip").textContent = (perfil.nombre || myId) + " · " + ROLES[perfil.rol];
     document.body.classList.toggle("admin", perfil.rol === "admin");
     if (perfil.rol === "lector") {
       writable = false; document.body.classList.add("readonly");
       const n = $("#globalNotice"); n.innerHTML = "<b>Solo lectura.</b> Puedes ver la información y descargar reportes. Para registrar, pide a un administrador que cambie tu permiso."; n.hidden = false;
+    }
+    if (perfil.rol === "despacho") { // Julio: solo la lista de despacho de hoy, sin precios
+      S.soloDespacho = true; document.body.classList.add("rol-despacho");
+      status(true); go("ventas-despacho");
+      return;
     }
     status(true);
     db.doc("config/general").onSnapshot(s => { S.config = s.exists ? s.data() : {}; fillDatalists(); renderAll(); }, () => {});
@@ -3038,7 +2998,7 @@ function escriturasSinEspera() {
     db.doc("contadores/ticket").onSnapshot(s => { const dd = s.exists ? (s.data() || {}) : null; S.contador = dd && Number.isFinite(dd.ultimo) ? dd : null; renderQuickMeta(); }, () => {});
     db.collection("usuarios").onSnapshot(s => { S.usuarios = s.docs.map(x => Object.assign({ email: x.id }, x.data())); renderView(); }, () => {});
     subscribeMes();
-  }
+  });
 })();
 })();
 </script>

@@ -1,43 +1,34 @@
 rules_version = '2';
 
 // Reglas de seguridad de la app Control Planta Agregados.
-// Copia de referencia. Antes de publicarlas en Firebase, pon en correosDuenos()
-// los correos de Google de los dueños, en minúsculas. No subas a GitHub los correos reales.
+// IMPORTANTE: antes de publicarlas en Firebase, pon en correosDuenos() los
+// correos de Google de los dueños, en minúsculas (paso 5 del README).
+// No subas a GitHub este archivo con los correos reales.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function correosDuenos() { return ['TU_CORREO@gmail.com']; }
 
-    // Trabajadores sin correo: entran con usuario y contraseña. Por dentro su cuenta es
-    // usuario@planta-agregados.firebaseapp.com (una dirección que no recibe correos).
-    function interno()      { return request.auth != null
-                                && request.auth.token.firebase.sign_in_provider == 'password'
-                                && request.auth.token.email.lower().matches('^[a-z0-9._-]+@planta-agregados[.]firebaseapp[.]com$'); }
-
-    function logueado()     { return request.auth != null && (request.auth.token.email_verified == true || interno()); }
+    function logueado()     { return request.auth != null && request.auth.token.email_verified == true; }
     function correo()       { return request.auth.token.email.lower(); }
-    function esDueno()      { return logueado() && !interno() && correo() in correosDuenos(); }
+    function esDueno()      { return logueado() && correo() in correosDuenos(); }
     function registrado()   { return logueado() && exists(/databases/$(database)/documents/usuarios/$(correo())); }
     function rol()          { return get(/databases/$(database)/documents/usuarios/$(correo())).data.rol; }
     function esAdmin()      { return esDueno() || (registrado() && rol() == 'admin'); }
     function puedeEscribir(){ return esAdmin() || (registrado() && rol() == 'editor'); }
     function puedeLeer()    { return esAdmin() || (registrado() && rol() in ['editor', 'lector']); }
+    // Despacho (Julio): solo ve y marca lo de hoy, de 6:30 a 17:45, hora de Lima (UTC-5).
+    function esDespacho()   { return registrado() && rol() == 'despacho'; }
+    function lima()         { return request.time - duration.value(5, 'h'); }
+    function minLima()      { return lima().hours() * 60 + lima().minutes(); }
+    function enHorario()    { return minLima() >= 390 && minLima() <= 1065; }
+    function hoyN()         { return lima().year() * 10000 + lima().month() * 100 + lima().day(); }
 
     // Quién puede entrar y con qué permiso: solo administradores lo cambian.
-    // Cada trabajador solo puede marcar que ya cambió su contraseña.
     match /usuarios/{email} {
       allow read: if puedeLeer() || (logueado() && email == correo());
-      allow create, delete: if esAdmin();
-      allow update: if esAdmin() || (registrado() && email == correo()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['debeCambiar', 'claveCambiadaEn'])
-        && request.resource.data.debeCambiar == false);
-    }
-
-    // Usuario -> cuenta interna. Se consulta en la pantalla de inicio, antes de entrar.
-    match /alias/{u} {
-      allow get: if true;
-      allow list, write: if esAdmin();
+      allow write: if esAdmin();
     }
 
     // Precios y datos de la empresa: solo administradores.
@@ -70,7 +61,7 @@ service cloud.firestore {
     // Registro diario de volquetes.
     match /m/{mes}/volquetes/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
 
-    // Diésel: saldo de tanques, lista de equipos y movimientos.
+    // Diésel: saldo de tanques, lista de equipos y movimientos (compras, consumos, ajustes).
     match /tanques/{id} { allow read: if puedeLeer(); allow write: if puedeEscribir(); }
     match /equipos/{id} {
       allow read: if puedeLeer();
@@ -84,6 +75,15 @@ service cloud.firestore {
       allow read: if puedeLeer();
       allow create, update: if puedeEscribir();
       allow delete: if esAdmin();
+    }
+
+    // Lista de despacho, sin precios. El despachador solo puede marcar "Despachado".
+    match /despacho/{id} {
+      allow read: if puedeLeer() || (esDespacho() && enHorario() && resource.data.diaN == hoyN());
+      allow create, delete: if puedeEscribir();
+      allow update: if puedeEscribir()
+        || (esDespacho() && enHorario() && resource.data.diaN == hoyN()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['despachado', 'despachadoPor', 'despachadoEn']));
     }
   }
 }
